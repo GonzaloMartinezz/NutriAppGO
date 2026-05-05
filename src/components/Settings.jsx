@@ -12,109 +12,87 @@ export function Settings({ userProfile, setUserProfile }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, we would save this to a backend/localStorage
     setUserProfile({ 
       ...formData, 
       avatar: formData.name ? formData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??' 
     });
-    setToast('Configuración guardada correctamente');
+    triggerConfirm('Configuración Actualizada', 'Los cambios en tu perfil profesional se han guardado correctamente.');
   };
 
   return (
-    <div style={{ maxWidth: '600px' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
       
-      <div className="section-header mb-6">
-        <div>
-          <div className="section-title">Configuración del Perfil</div>
-          <div className="text-muted text-sm" style={{ marginTop: 3 }}>
-            Personalizá tu información profesional y ajustes de la plataforma
-          </div>
-        </div>
+      <div style={{ marginBottom: '40px' }}>
+        <h1 style={{ fontSize: '36px', fontFamily: 'var(--font-display)', color: '#064e3b', marginBottom: '8px' }}>Configuración</h1>
+        <p className="text-muted">Gestiona tu identidad profesional y las preferencias de tu espacio de trabajo.</p>
       </div>
 
-      <div className="card">
-        <div className="card-title">
-          <span className="icon">👤</span>Información Profesional
+      <div className="grid-2 gap-8" style={{ gridTemplateColumns: '300px 1fr' }}>
+        {/* Sidebar Settings Navigation */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {['Perfil', 'Notificaciones', 'Seguridad', 'Suscripción'].map((item, i) => (
+            <div key={item} style={{ 
+              padding: '12px 16px', borderRadius: '12px', fontWeight: 600, fontSize: '14px',
+              background: i === 0 ? 'var(--green-50)' : 'transparent',
+              color: i === 0 ? 'var(--green-700)' : 'var(--slate-500)',
+              cursor: 'pointer'
+            }}>
+              {item}
+            </div>
+          ))}
         </div>
-        
-        <form onSubmit={handleSubmit}>
-          <div className="grid-2 gap-4">
-            <div className="form-group">
-              <label className="label">Nombre y Apellido</label>
-              <input 
-                className="input" 
-                name="name"
-                value={formData.name} 
-                onChange={handleChange}
-                placeholder="Ej: Valeria Rodríguez"
-              />
+
+        {/* Content */}
+        <div className="card" style={{ padding: '40px', borderRadius: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '40px', paddingBottom: '40px', borderBottom: '1px solid #f1f5f9' }}>
+            <div className="user-avatar" style={{ width: '80px', height: '80px', fontSize: '32px', borderRadius: '24px' }}>
+              {formData.name ? formData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??'}
             </div>
-            <div className="form-group">
-              <label className="label">Matrícula Nacional (MN)</label>
-              <input 
-                className="input" 
-                name="mn"
-                value={formData.mn} 
-                onChange={handleChange}
-                placeholder="Ej: 12345"
-              />
-            </div>
-            <div className="form-group">
-              <label className="label">Especialidad / Título</label>
-              <input 
-                className="input" 
-                name="role"
-                value={formData.role} 
-                onChange={handleChange}
-                placeholder="Ej: Nutricionista"
-              />
-            </div>
-            <div className="form-group">
-              <label className="label">Email de Contacto</label>
-              <input 
-                className="input" 
-                name="email"
-                type="email"
-                value={formData.email || ''} 
-                onChange={handleChange}
-                placeholder="Ej: valeria@nutriapp.com"
-              />
+            <div>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b' }}>Foto de Perfil</h3>
+              <p className="text-muted" style={{ fontSize: '13px', marginBottom: '12px' }}>Actualiza tu foto para que tus pacientes te reconozcan.</p>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn btn-primary btn-sm">Subir Nueva</button>
+                <button className="btn btn-ghost btn-sm">Eliminar</button>
+              </div>
             </div>
           </div>
 
-          <div className="divider" />
+          <form onSubmit={handleSubmit}>
+            <div className="grid-2 gap-6" style={{ marginBottom: '32px' }}>
+              <div className="form-group">
+                <label className="label">Nombre Profesional</label>
+                <input className="input" name="name" value={formData.name} onChange={handleChange} style={{ borderRadius: '12px' }} />
+              </div>
+              <div className="form-group">
+                <label className="label">Matrícula (MN/MP)</label>
+                <input className="input" name="mn" value={formData.mn} onChange={handleChange} style={{ borderRadius: '12px' }} />
+              </div>
+              <div className="form-group">
+                <label className="label">Especialidad</label>
+                <input className="input" name="role" value={formData.role} onChange={handleChange} style={{ borderRadius: '12px' }} />
+              </div>
+              <div className="form-group">
+                <label className="label">Email de Trabajo</label>
+                <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} style={{ borderRadius: '12px' }} />
+              </div>
+            </div>
 
-          <div className="card-title">
-            <span className="icon">🎨</span>Preferencias de Interfaz
-          </div>
-          
-          <div className="form-group">
-            <label className="label">Tema de la plataforma</label>
-            <select className="select" defaultValue="light">
-              <option value="light">Claro (Predeterminado)</option>
-              <option value="dark">Oscuro (Próximamente)</option>
-              <option value="system">Sincronizar con sistema</option>
-            </select>
-          </div>
+            <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', marginBottom: '32px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>Preferencias de Idioma</h4>
+              <select className="select" style={{ background: '#fff', borderRadius: '12px' }}>
+                <option>Español (Latinoamérica)</option>
+                <option>English</option>
+                <option>Português</option>
+              </select>
+            </div>
 
-          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="btn btn-primary">
-              💾 Guardar Cambios
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="card mt-2" style={{ marginTop: '16px', background: 'var(--slate-50)', borderStyle: 'dashed' }}>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <div className="user-avatar" style={{ width: 48, height: 48, fontSize: 18 }}>
-            {formData.name ? formData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??'}
-          </div>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 15 }}>Vista previa del perfil</div>
-            <div className="text-sm text-muted">Así se verá tu nombre en la plataforma y reportes.</div>
-          </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button type="button" className="btn btn-outline">Descartar</button>
+              <button type="submit" className="btn btn-primary" style={{ padding: '12px 32px' }}>Guardar Cambios</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

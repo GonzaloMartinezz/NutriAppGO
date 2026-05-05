@@ -1,354 +1,227 @@
 import React, { useState } from 'react';
 import { FoodSearchBar } from './FoodSearchBar';
 import { Toast } from './Toast';
-import { PieChart } from './PieChart';
-import { MacroBar } from './MacroBar';
 import { SARA2_FOODS } from '../data/foods';
 import { calcItem, sumItems, calcDist } from '../utils/math';
 
 export function Calculator() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([
+    { foodId: '1', foodName: 'Pollo, pechuga', grams: 100, proteinas_g: 34.5, lipidos_g: 1.8, hidratos_g: 0, fibra_g: 0, colest_mg: 87, ag_sat: 0.5, ag_mono: 0.6, ag_poli: 0.4, ag_trans: 0 },
+    { foodId: '2', foodName: 'Arroz, blanco', grams: 80, proteinas_g: 5.6, lipidos_g: 0.4, hidratos_g: 63.2, fibra_g: 1.0, colest_mg: 0, ag_sat: 0.1, ag_mono: 0.1, ag_poli: 0.1, ag_trans: 0 }
+  ]);
   const [toast, setToast] = useState(null);
-  const [showMicro, setShowMicro] = useState(false);
 
   const addFood = (food) => {
     if (items.find((i) => i.foodId === food.id)) {
       setToast('Ya está en la lista');
       return;
     }
-    setItems((prev) => [...prev, calcItem(food, 100)]);
+    const newItem = {
+      foodId: food.id,
+      foodName: food.nombre,
+      grams: 100,
+      proteinas_g: food.proteinas_g,
+      lipidos_g: food.lipidos_g,
+      hidratos_g: food.hidratos_g,
+      fibra_g: food.fibra_g,
+      colest_mg: food.colesterol_mg || 0,
+      ag_sat: food.ag_sat || 0,
+      ag_mono: food.ag_mono || 0,
+      ag_poli: food.ag_poli || 0,
+      ag_trans: food.ag_trans || 0
+    };
+    setItems((prev) => [...prev, newItem]);
   };
 
   const updateGrams = (foodId, grams) => {
     const g = parseInt(grams) || 0;
-    const food = SARA2_FOODS.find((f) => f.id === foodId);
-    if (!food) return;
     setItems((prev) =>
-      prev.map((i) => (i.foodId === foodId ? calcItem(food, g) : i))
+      prev.map((i) => {
+        if (i.foodId === foodId) {
+          const ratio = g / 100;
+          const original = SARA2_FOODS.find(f => f.id === foodId) || i;
+          return {
+            ...i,
+            grams: g,
+            proteinas_g: original.proteinas_g * ratio,
+            lipidos_g: original.lipidos_g * ratio,
+            hidratos_g: original.hidratos_g * ratio,
+            fibra_g: original.fibra_g * ratio,
+            colest_mg: (original.colesterol_mg || 0) * ratio,
+            ag_sat: (original.ag_sat || 0) * ratio,
+            ag_mono: (original.ag_mono || 0) * ratio,
+            ag_poli: (original.ag_poli || 0) * ratio,
+            ag_trans: (original.ag_trans || 0) * ratio
+          };
+        }
+        return i;
+      })
     );
   };
 
-  const removeItem = (foodId) =>
-    setItems((prev) => prev.filter((i) => i.foodId !== foodId));
+  const removeItem = (foodId) => setItems((prev) => prev.filter((i) => i.foodId !== foodId));
 
-  const totals = sumItems(items);
-  const dist = calcDist(totals.proteinas_g, totals.lipidos_g, totals.hidratos_g);
-  const clear = () => {
-    setItems([]);
+  const totals = {
+    grams: items.reduce((a, b) => a + b.grams, 0),
+    prot: items.reduce((a, b) => a + b.proteinas_g, 0),
+    lip: items.reduce((a, b) => a + b.lipidos_g, 0),
+    cho: items.reduce((a, b) => a + b.hidratos_g, 0),
+    fibra: items.reduce((a, b) => a + b.fibra_g, 0),
+    colest: items.reduce((a, b) => a + b.colest_mg, 0),
+    sat: items.reduce((a, b) => a + b.ag_sat, 0),
+    mono: items.reduce((a, b) => a + b.ag_mono, 0),
+    poli: items.reduce((a, b) => a + b.ag_poli, 0),
+    trans: items.reduce((a, b) => a + b.ag_trans, 0)
   };
 
+  const kcalProt = totals.prot * 4;
+  const kcalCho = totals.cho * 4;
+  const kcalLip = totals.lip * 9;
+  const vct = kcalProt + kcalCho + kcalLip;
+
+  const pctP = vct > 0 ? (kcalProt / vct) * 100 : 0;
+  const pctC = vct > 0 ? (kcalCho / vct) * 100 : 0;
+  const pctL = vct > 0 ? (kcalLip / vct) * 100 : 0;
+
   return (
-    <div>
+    <div className="calculator-clinical">
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
-      <div className="section-header mb-4">
+      
+      <div className="clinical-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <div className="section-title">Calculadora SARA 2</div>
-          <div className="text-muted text-sm" style={{ marginTop: 3 }}>
-            Análisis calórico y macronutricional · Tabla oficial argentina
-          </div>
+          <span style={{ fontSize: '11px', fontWeight: 800, color: '#064e3b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Herramienta Clínica</span>
+          <h1 style={{ fontSize: '36px', fontWeight: 800, color: '#064e3b', marginTop: '8px' }}>Software de Fórmula Desarrollada - Tabla SARA 2</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            className="btn btn-outline btn-sm"
-            onClick={() => setShowMicro(!showMicro)}
-          >
-            🔬 {showMicro ? 'Ocultar' : 'Ver'} micronutrientes
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <button className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '20px' }}>💾</span> Guardar Fórmula
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={clear}>
-            🗑️ Limpiar
+          <button className="btn" style={{ background: '#064e3b', color: '#fff', padding: '14px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700 }}>
+            <span>📥</span> Exportar PDF
           </button>
         </div>
       </div>
 
-      <div className="card mb-4">
-        <div className="card-title">
-          <span className="icon">🔍</span>Buscar y agregar alimento
-        </div>
-        <FoodSearchBar onSelect={addFood} placeholder="Ej: pollo, arroz, zanahoria..." />
-        <div className="text-sm text-muted mt-2">
-          Escribí al menos 2 letras · {SARA2_FOODS.length} alimentos disponibles
+      <div className="info-box" style={{ background: '#f0fdf4', borderLeft: '4px solid #064e3b', padding: '24px', borderRadius: '16px', marginBottom: '40px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <span style={{ fontSize: '24px', background: '#fff', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>ℹ️</span>
+        <div>
+          <h4 style={{ fontWeight: 700, color: '#064e3b', marginBottom: '8px' }}>Cálculo Basado en Tabla SARA 2</h4>
+          <p style={{ color: '#4b5563', fontSize: '14px', lineHeight: 1.6 }}>Los valores nutricionales se calculan automáticamente utilizando una regla de tres simple, basándose en la composición estándar por 100g de alimento según la base de datos SARA.</p>
         </div>
       </div>
 
-      {items.length > 0 ? (
-        <div className="grid-2 gap-4">
-          <div className="card" style={{ gridColumn: '1 / -1' }}>
-            <div className="card-title">
-              <span className="icon">🍽️</span>Tabla de análisis
+      <div className="calculator-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+        <div className="calc-table-card">
+          <div className="card" style={{ padding: '32px', borderRadius: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#064e3b' }}>Ingredientes de la Fórmula</h3>
+              <button className="btn-add-food" onClick={() => {}} style={{ background: 'none', border: 'none', color: '#064e3b', fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', textTransform: 'uppercase' }}>
+                <span>⊕</span> Añadir Alimento
+              </button>
             </div>
-            <div className="table-wrap">
-              <table className="calc-table">
+
+            <FoodSearchBar onSelect={addFood} placeholder="Buscar y agregar..." />
+
+            <div className="table-overflow" style={{ overflowX: 'auto', marginTop: '24px' }}>
+              <table className="clinical-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <thead>
-                  <tr>
-                    <th>Alimento</th>
-                    <th>Grupo</th>
-                    <th style={{ textAlign: 'right' }}>Gramos</th>
-                    <th style={{ textAlign: 'right' }}>Kcal</th>
-                    <th style={{ textAlign: 'right' }}>Prot</th>
-                    <th style={{ textAlign: 'right' }}>Líp</th>
-                    <th style={{ textAlign: 'right' }}>CHO</th>
-                    <th style={{ textAlign: 'right' }}>Fibra</th>
-                    <th></th>
+                  <tr style={{ background: '#f8fafc', color: '#64748b', textAlign: 'left' }}>
+                    <th style={{ padding: '12px' }}>Alimento</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Cant. (g)</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Prot. (g)</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Líp. (g)</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Colest.</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Sat.</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Mono.</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Poli.</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Carb.</th>
+                    <th style={{ padding: '12px', textAlign: 'center' }}>Fibra</th>
+                    <th style={{ padding: '12px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((it) => {
-                    const food = SARA2_FOODS.find((f) => f.id === it.foodId);
-                    return (
-                      <tr key={it.foodId}>
-                        <td className="food-name">{it.foodName}</td>
-                        <td>
-                          <span className="text-sm text-muted">
-                            {food?.grupo || ''}
-                          </span>
-                        </td>
-                        <td className="num">
-                          <input
-                            className="grams-input"
-                            type="number"
-                            min="0"
-                            max="2000"
-                            value={it.grams}
-                            onChange={(e) => updateGrams(it.foodId, e.target.value)}
-                          />
-                        </td>
-                        <td className="num">
-                          <span style={{ fontWeight: 600, color: 'var(--slate-700)' }}>
-                            {it.kcal.toFixed(0)}
-                          </span>
-                        </td>
-                        <td className="num">
-                          <span style={{ color: '#ef4444', fontWeight: 500 }}>
-                            {it.proteinas_g.toFixed(1)}g
-                          </span>
-                        </td>
-                        <td className="num">
-                          <span style={{ color: '#f59e0b', fontWeight: 500 }}>
-                            {it.lipidos_g.toFixed(1)}g
-                          </span>
-                        </td>
-                        <td className="num">
-                          <span style={{ color: '#3b82f6', fontWeight: 500 }}>
-                            {it.hidratos_g.toFixed(1)}g
-                          </span>
-                        </td>
-                        <td className="num">
-                          <span style={{ color: '#10b981', fontWeight: 500 }}>
-                            {it.fibra_g.toFixed(1)}g
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            className="remove-btn"
-                            onClick={() => removeItem(it.foodId)}
-                          >
-                            ✕
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  <tr style={{ background: 'var(--slate-50)' }}>
-                    <td colSpan={2} style={{ fontWeight: 700, fontSize: 13 }}>
-                      TOTAL ({items.length} alimentos)
-                    </td>
-                    <td className="num" style={{ fontWeight: 700 }}>
-                      {items.reduce((a, i) => a + i.grams, 0)}g
-                    </td>
-                    <td className="num" style={{ fontWeight: 700, color: 'var(--slate-800)' }}>
-                      {totals.kcal.toFixed(0)}
-                    </td>
-                    <td className="num" style={{ fontWeight: 700, color: '#ef4444' }}>
-                      {totals.proteinas_g.toFixed(1)}g
-                    </td>
-                    <td className="num" style={{ fontWeight: 700, color: '#f59e0b' }}>
-                      {totals.lipidos_g.toFixed(1)}g
-                    </td>
-                    <td className="num" style={{ fontWeight: 700, color: '#3b82f6' }}>
-                      {totals.hidratos_g.toFixed(1)}g
-                    </td>
-                    <td className="num" style={{ fontWeight: 700, color: '#10b981' }}>
-                      {totals.fibra_g.toFixed(1)}g
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="result-box">
-            <div className="result-vct-label">Valor Calórico Total</div>
-            <div className="result-vct">
-              {dist.VCT.toFixed(0)}{' '}
-              <span style={{ fontSize: 20, fontWeight: 300, opacity: 0.7 }}>
-                kcal
-              </span>
-            </div>
-            <div
-              className="divider"
-              style={{ borderColor: 'rgba(255,255,255,.1)', margin: '14px 0' }}
-            />
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'rgba(255,255,255,.5)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '.08em',
-                  }}
-                >
-                  Proteínas
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#f87171' }}>
-                  {dist.pctP}%
-                </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>
-                  {totals.proteinas_g.toFixed(1)}g
-                </div>
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'rgba(255,255,255,.5)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '.08em',
-                  }}
-                >
-                  Lípidos
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#fbbf24' }}>
-                  {dist.pctL}%
-                </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>
-                  {totals.lipidos_g.toFixed(1)}g
-                </div>
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'rgba(255,255,255,.5)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '.08em',
-                  }}
-                >
-                  Hidratos
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#60a5fa' }}>
-                  {dist.pctH}%
-                </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>
-                  {totals.hidratos_g.toFixed(1)}g
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="card-title">
-              <span className="icon">📊</span>Distribución calórica
-            </div>
-            <div className="pie-wrap">
-              <PieChart
-                pct_p={dist.pctP}
-                pct_l={dist.pctL}
-                pct_h={dist.pctH}
-                size={110}
-              />
-              <div className="pie-legend">
-                <div className="pie-legend-row">
-                  <div className="pie-legend-dot" style={{ background: '#ef4444' }} />
-                  <span className="pie-pct">{dist.pctP}%</span>
-                  <span className="pie-name">Proteínas</span>
-                </div>
-                <div className="pie-legend-row">
-                  <div className="pie-legend-dot" style={{ background: '#3b82f6' }} />
-                  <span className="pie-pct">{dist.pctH}%</span>
-                  <span className="pie-name">Hidratos</span>
-                </div>
-                <div className="pie-legend-row">
-                  <div className="pie-legend-dot" style={{ background: '#f59e0b' }} />
-                  <span className="pie-pct">{dist.pctL}%</span>
-                  <span className="pie-name">Lípidos</span>
-                </div>
-                <div className="pie-legend-row">
-                  <div className="pie-legend-dot" style={{ background: '#10b981' }} />
-                  <span className="pie-pct">{totals.fibra_g.toFixed(1)}g</span>
-                  <span className="pie-name">Fibra</span>
-                </div>
-              </div>
-            </div>
-            <div className="divider" />
-            <MacroBar
-              prot={totals.proteinas_g}
-              lip={totals.lipidos_g}
-              cho={totals.hidratos_g}
-            />
-          </div>
-
-          {showMicro && (
-            <div className="card">
-              <div className="card-title">
-                <span className="icon">🔬</span>Micronutrientes (total)
-              </div>
-              <table style={{ width: '100%' }}>
-                <tbody>
-                  {[
-                    ['Calcio', totals.calcio_mg, 'mg', 1000],
-                    ['Hierro', totals.hierro_mg, 'mg', 8],
-                    ['Sodio', totals.sodio_mg, 'mg', 2300],
-                  ].map(([n, v, u, ref]) => (
-                    <tr key={n} style={{ borderBottom: '1px solid var(--slate-100)' }}>
-                      <td style={{ padding: '8px 4px', fontSize: 13 }}>{n}</td>
-                      <td
-                        style={{ textAlign: 'right', fontWeight: 600, fontSize: 13 }}
-                      >
-                        {v.toFixed(1)} {u}
+                  {items.map(it => (
+                    <tr key={it.foodId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px 12px', fontWeight: 600 }}>{it.foodName}</td>
+                      <td style={{ padding: '16px 12px' }}>
+                        <input type="number" value={it.grams} onChange={(e) => updateGrams(it.foodId, e.target.value)} style={{ width: '60px', padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', textAlign: 'center' }} />
                       </td>
-                      <td style={{ width: 120, paddingLeft: 12 }}>
-                        <div className="progress-wrap">
-                          <div
-                            className="progress-fill"
-                            style={{
-                              width: `${Math.min((v / ref) * 100, 100)}%`,
-                              background:
-                                v / ref > 1
-                                  ? '#22c55e'
-                                  : v / ref > 0.5
-                                  ? '#f59e0b'
-                                  : '#ef4444',
-                            }}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            color: 'var(--slate-400)',
-                            marginTop: 2,
-                          }}
-                        >
-                          {((v / ref) * 100).toFixed(0)}% recomendado
-                        </div>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.proteinas_g.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.lipidos_g.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.colest_mg.toFixed(0)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.ag_sat.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.ag_mono.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.ag_poli.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.hidratos_g.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>{it.fibra_g.toFixed(1)}</td>
+                      <td style={{ padding: '16px 12px', textAlign: 'right' }}>
+                        <button onClick={() => removeItem(it.foodId)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>✕</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
+                <tfoot>
+                  <tr style={{ background: '#f8fafc', fontWeight: 800, color: '#064e3b' }}>
+                    <td style={{ padding: '16px 12px' }}>Totales:</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.grams}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.prot.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.lip.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.colest.toFixed(0)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.sat.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.mono.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.poli.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.cho.toFixed(1)}</td>
+                    <td style={{ padding: '16px 12px', textAlign: 'center' }}>{totals.fibra.toFixed(1)}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
-          )}
-        </div>
-      ) : (
-        <div className="card">
-          <div className="empty-state">
-            <div className="empty-icon">🥗</div>
-            <div className="empty-text">Agregá alimentos para comenzar el análisis</div>
-            <div className="empty-sub">Buscá por nombre, grupo o tipo de alimento</div>
           </div>
         </div>
-      )}
+
+        <div className="formula-sidebar">
+          <div className="card" style={{ padding: '40px', borderRadius: '32px', textAlign: 'center', height: '100%' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#064e3b', marginBottom: '40px', textAlign: 'left' }}>Fórmula Calórica</h2>
+            
+            <div className="vct-box" style={{ background: '#f7fee7', padding: '32px', borderRadius: '24px', marginBottom: '48px', border: '1px solid #bef264' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#3f6212', letterSpacing: '0.1em' }}>Kcal Totales</span>
+              <div style={{ fontSize: '64px', fontWeight: 800, color: '#4d1d95', marginTop: '8px' }}>{vct.toFixed(1)}</div>
+            </div>
+
+            <div className="macro-donut-wrap" style={{ position: 'relative', width: '200px', height: '200px', margin: '0 auto 40px' }}>
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#f1f5f9" strokeWidth="20" />
+                {/* Simplified Donut logic for demo */}
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#064e3b" strokeWidth="20" strokeDasharray={`${(pctP / 100) * 502} 502`} strokeLinecap="round" transform="rotate(-90 100 100)" />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#64748b' }}>Macros</span>
+                <span style={{ fontSize: '14px', fontWeight: 800, color: '#064e3b' }}>Atwater</span>
+              </div>
+            </div>
+
+            <div className="macro-list-clinical" style={{ textAlign: 'left', display: 'grid', gap: '24px' }}>
+              {[
+                { label: 'Proteínas', pct: pctP, kcal: kcalProt, grams: totals.prot, color: '#064e3b', factor: 4 },
+                { label: 'Carbohidratos', pct: pctC, kcal: kcalCho, grams: totals.cho, color: '#0891b2', factor: 4 },
+                { label: 'Lípidos', pct: pctL, kcal: kcalLip, grams: totals.lip, color: '#4d1d95', factor: 9 }
+              ].map(m => (
+                <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: m.color }}></div>
+                     <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>{m.label} ({m.pct.toFixed(1)}%)</span>
+                   </div>
+                   <div style={{ textAlign: 'right' }}>
+                     <div style={{ fontSize: '14px', fontWeight: 800, color: '#1e293b' }}>{m.kcal.toFixed(1)} kcal</div>
+                     <div style={{ fontSize: '11px', color: '#64748b' }}>{m.grams.toFixed(1)}g × {m.factor}</div>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

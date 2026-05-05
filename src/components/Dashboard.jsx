@@ -12,7 +12,7 @@ export function Dashboard({ patients, setPage, userProfile }) {
     <div>
       <div className="section-header mb-6">
         <div>
-          <div className="section-title">¡Hola, {userProfile.name.split(' ')[0]}! 👋</div>
+          <div className="section-title" style={{ color: 'var(--text-main)' }}>¡Hola, {userProfile.name.split(' ')[0]}! 👋</div>
           <div className="text-muted text-sm" style={{ marginTop: 3 }}>
             {userProfile.role} {userProfile.name} · MN {userProfile.mn} ·{' '}
             {new Date().toLocaleDateString('es-AR', {
@@ -139,11 +139,11 @@ export function Dashboard({ patients, setPage, userProfile }) {
                 alignItems: 'center',
                 padding: '10px 0',
                 borderBottom:
-                  i < recentPlan.length - 1 ? '1px solid var(--slate-100)' : 'none',
+                  i < recentPlan.length - 1 ? '1px solid var(--border-light)' : 'none',
               }}
             >
               <div>
-                <div style={{ fontWeight: 500, fontSize: 13 }}>{pl.name}</div>
+                <div style={{ fontWeight: 500, fontSize: 13, color: 'var(--text-main)' }}>{pl.name}</div>
                 <div className="text-sm text-muted">
                   {pl.date} · {pl.kcal} kcal objetivo
                 </div>
@@ -152,25 +152,26 @@ export function Dashboard({ patients, setPage, userProfile }) {
             </div>
           ))}
           <div className="divider" />
-          <div
+          <div className="quick-access-card"
             style={{
-              background: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+              background: 'var(--border-light)',
               borderRadius: 10,
               padding: 16,
               marginTop: 4,
+              border: '1px solid var(--border)'
             }}
           >
             <div
               style={{
                 fontWeight: 600,
                 fontSize: 13,
-                color: 'var(--green-800)',
+                color: 'var(--accent)',
                 marginBottom: 4,
               }}
             >
               ⚡ Acceso rápido
             </div>
-            <div style={{ fontSize: 12, color: 'var(--green-700)', marginBottom: 10 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
               Analizar alimentos con la tabla SARA 2
             </div>
             <button

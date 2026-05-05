@@ -9,10 +9,23 @@ import {
   ACTIVITY_LABELS,
 } from '../utils/math';
 
-export function Patients({ patients, setPatients }) {
+export function Patients({ patients, setPatients, triggerConfirm }) {
   const [selected, setSelected] = useState(null);
   const [q, setQ] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [newPatient, setNewPatient] = useState({
+    firstName: '',
+    lastName: '',
+    dni: '',
+    birthDate: '',
+    sex: 'F',
+    occupation: '',
+    email: '',
+    phone: '',
+    pathologies: '',
+    objectives: '',
+    activity: 'MODERADO'
+  });
   const [showAnthro, setShowAnthro] = useState(false);
   const [anthroForm, setAnthroForm] = useState({
     weight: '',
@@ -55,7 +68,33 @@ export function Patients({ patients, setPatients }) {
     );
     setAnthroForm({ weight: '', height: '', waistCirc: '', hipCirc: '' });
     setShowAnthro(false);
-    setToast('Medición registrada exitosamente');
+    triggerConfirm('Medición Guardada', 'Los nuevos datos antropométricos han sido registrados en la evolución del paciente.');
+  };
+
+  const handleAddPatient = (e) => {
+    e.preventDefault();
+    if (!newPatient.firstName || !newPatient.lastName) return;
+    
+    const p = {
+      id: `P${Date.now()}`,
+      ...newPatient,
+      pathologies: newPatient.pathologies.split(',').map(s => s.trim()).filter(s => s),
+      objectives: newPatient.objectives.split(',').map(s => s.trim()).filter(s => s),
+      allergies: [],
+      medications: [],
+      contact: { email: newPatient.email, phone: newPatient.phone },
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString().slice(0, 10),
+      anthropometry: [],
+      physicalActivity: newPatient.activity,
+      requirements: { eer: 2000, proteins_g: 100, proteins_pct: 20, carbs_g: 250, carbs_pct: 50, fats_g: 66, fats_pct: 30, fiber_g: 25 }
+    };
+    
+    setPatients(prev => [p, ...prev]);
+    setShowForm(false);
+    setNewPatient({ firstName: '', lastName: '', dni: '', birthDate: '', sex: 'F', occupation: '', email: '', phone: '', pathologies: '', objectives: '', activity: 'MODERADO' });
+    triggerConfirm('Paciente Registrado', `Se ha creado la ficha de ${p.firstName} ${p.lastName} con éxito.`);
+    setSelected(p.id);
   };
 
   return (
@@ -64,9 +103,8 @@ export function Patients({ patients, setPatients }) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '260px 1fr',
-          gap: 16,
-          height: 'calc(100vh - 110px)',
+          gridTemplateColumns: '280px 1fr',
+          gap: 24,
         }}
       >
         {/* Patient List */}
@@ -780,6 +818,74 @@ export function Patients({ patients, setPatients }) {
                 Guardar medición
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Patient Modal */}
+      {showForm && (
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowForm(false)}>
+          <div className="modal modal-lg">
+            <div className="modal-header">
+              <div className="modal-title">Registrar Nuevo Paciente</div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setShowForm(false)}>✕</button>
+            </div>
+            <form onSubmit={handleAddPatient}>
+              <div className="modal-body">
+                <div className="grid-2 gap-4">
+                  <div className="form-group">
+                    <label className="label">Nombre *</label>
+                    <input className="input" required value={newPatient.firstName} onChange={e => setNewPatient(p => ({...p, firstName: e.target.value}))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Apellido *</label>
+                    <input className="input" required value={newPatient.lastName} onChange={e => setNewPatient(p => ({...p, lastName: e.target.value}))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">DNI</label>
+                    <input className="input" value={newPatient.dni} onChange={e => setNewPatient(p => ({...p, dni: e.target.value}))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Fecha de Nacimiento</label>
+                    <input className="input" type="date" value={newPatient.birthDate} onChange={e => setNewPatient(p => ({...p, birthDate: e.target.value}))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Sexo</label>
+                    <select className="select" value={newPatient.sex} onChange={e => setNewPatient(p => ({...p, sex: e.target.value}))}>
+                      <option value="F">Femenino</option>
+                      <option value="M">Masculino</option>
+                      <option value="O">Otro</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Actividad Física</label>
+                    <select className="select" value={newPatient.activity} onChange={e => setNewPatient(p => ({...p, activity: e.target.value}))}>
+                      {Object.entries(ACTIVITY_LABELS).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Email</label>
+                    <input className="input" type="email" value={newPatient.email} onChange={e => setNewPatient(p => ({...p, email: e.target.value}))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Teléfono</label>
+                    <input className="input" value={newPatient.phone} onChange={e => setNewPatient(p => ({...p, phone: e.target.value}))} />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="label">Patologías (separadas por coma)</label>
+                    <input className="input" placeholder="Ej: Diabetes T2, HTA" value={newPatient.pathologies} onChange={e => setNewPatient(p => ({...p, pathologies: e.target.value}))} />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="label">Objetivos (separados por coma)</label>
+                    <input className="input" placeholder="Ej: Bajar 5kg, Mejorar rendimiento" value={newPatient.objectives} onChange={e => setNewPatient(p => ({...p, objectives: e.target.value}))} />
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">Crear Paciente</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

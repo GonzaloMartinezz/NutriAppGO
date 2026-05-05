@@ -1,272 +1,269 @@
 import React, { useState } from 'react';
-import { SAMPLE_RECIPES, CAT_COLORS, CAT_LABELS } from '../data/recipes';
-import { PieChart } from './PieChart';
-import { calcDist } from '../utils/math';
 
-export function Recipes() {
-  const [recipes, setRecipes] = useState(SAMPLE_RECIPES);
-  const [selected, setSelected] = useState(null);
-  const [filter, setFilter] = useState('TODOS');
+const CAT_COLORS = {
+  Todos: '#f1f5f9',
+  Desayuno: '#fef3c7',
+  Almuerzo: '#d1fae5',
+  Merienda: '#fce7f3',
+  Cena: '#dbeafe',
+  Snacks: '#f3e8ff'
+};
 
-  const filtered =
-    filter === 'TODOS' ? recipes : recipes.filter((r) => r.category === filter);
-  const rec = selected ? recipes.find((r) => r.id === selected) : null;
+export function Recipes({ recipes, setRecipes, triggerConfirm }) {
+  const [view, setView] = useState('list'); // 'list' or 'add'
+  const [activeFilter, setActiveFilter] = useState('Todos');
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  const filtered = activeFilter === 'Todos' 
+    ? recipes 
+    : recipes.filter(r => r.category === activeFilter);
+
+  if (view === 'add') {
+    return <RecipeForm 
+      onCancel={() => setView('list')} 
+      onSave={(newRec) => {
+        setRecipes([newRec, ...recipes]);
+        setView('list');
+        triggerConfirm('Receta Guardada', `La receta "${newRec.name}" ha sido añadida a tu catálogo personal.`);
+      }} 
+    />;
+  }
 
   return (
-    <div>
-      <div className="section-header mb-4">
+    <div className="recipes-clinical">
+      <div className="section-header" style={{ marginBottom: 40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <div className="section-title">Recetario Profesional</div>
-          <div className="text-muted text-sm" style={{ marginTop: 3 }}>
-            Recetas con desglose nutricional completo · SARA 2
-          </div>
+          <h1 style={{ fontSize: '36px', fontFamily: 'var(--font-display)', color: '#064e3b', marginBottom: '8px' }}>Recetario Clínico</h1>
+          <p className="text-muted" style={{ fontSize: '16px' }}>Gestiona y descubre preparaciones de alto rendimiento nutricional.</p>
         </div>
-        <button className="btn btn-primary">+ Nueva receta</button>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => setView('add')}
+          style={{ padding: '14px 28px', borderRadius: '12px', fontWeight: 700 }}
+        >
+          <span>⊕</span> Subir Receta
+        </button>
       </div>
-      <div className="tabs mb-4">
-        {['TODOS', 'DESAYUNO', 'ALMUERZO', 'MERIENDA', 'CENA'].map((f) => (
-          <div
+
+      <div className="filter-bar" style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
+        {['Todos', 'Desayuno', 'Almuerzo', 'Cena', 'Snacks'].map(f => (
+          <button 
             key={f}
-            className={`tab${filter === f ? ' active' : ''}`}
-            onClick={() => setFilter(f)}
+            onClick={() => setActiveFilter(f)}
+            style={{ 
+              padding: '10px 24px', 
+              borderRadius: '99px', 
+              border: activeFilter === f ? 'none' : '1px solid #e2e8f0',
+              background: activeFilter === f ? '#065f46' : '#fff',
+              color: activeFilter === f ? '#fff' : '#64748b',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
           >
-            {f === 'TODOS' ? 'Todas' : CAT_LABELS[f] || f}
-          </div>
+            {f}
+          </button>
         ))}
       </div>
-      <div className="recipe-grid">
-        {filtered.map((r) => {
-          return (
-            <div key={r.id} className="recipe-card" onClick={() => setSelected(r.id)}>
-              <div
-                className="recipe-card-img"
-                style={{ background: CAT_COLORS[r.category] || 'var(--slate-100)' }}
-              >
-                {r.emoji || '🍽️'}
+
+      <div className="recipes-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '32px' }}>
+        <div className="recipes-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+          {filtered.map(card => (
+            <div key={card.id} className="card recipe-card-premium" onClick={() => setSelectedRecipe(card)} style={{ padding: 0, overflow: 'hidden', borderRadius: '24px', cursor: 'pointer' }}>
+              <div style={{ position: 'relative', height: '180px', background: CAT_COLORS[card.category] || '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '64px' }}>
+                {card.emoji || '🥗'}
+                <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', color: '#fff', padding: '4px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 800 }}>{card.category}</span>
               </div>
-              <div className="recipe-card-body">
-                <span className="badge badge-green" style={{ marginBottom: 6, fontSize: 10 }}>
-                  {CAT_LABELS[r.category]}
-                </span>
-                <div className="recipe-card-name">{r.name}</div>
-                <div className="recipe-card-meta">
-                  {r.servings} porción{r.servings > 1 ? 'es' : ''} ·{' '}
-                  {r.prepTime + r.cookTime} min · {r.difficulty}
+              <div style={{ padding: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#064e3b', marginBottom: '8px' }}>{card.name}</h3>
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                  {card.tags?.slice(0, 2).map(t => <span key={t} className="chip" style={{ fontSize: '10px' }}>{t}</span>)}
                 </div>
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {r.tags.slice(0, 2).map((t) => (
-                    <span key={t} className="chip" style={{ fontSize: 10, padding: '2px 6px' }}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <span className="macro-pill kcal">{r.kcalPerServing} kcal</span>
-                  <span className="macro-pill prot">P: {r.proteinasPerServing}g</span>
-                  <span className="macro-pill cho">CHO: {r.hidratosPerServing}g</span>
-                  <span className="macro-pill lip">L: {r.lipidosPerServing}g</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      {rec && (
-        <div
-          className="modal-overlay"
-          onClick={(e) => e.target === e.currentTarget && setSelected(null)}
-        >
-          <div className="modal modal-lg">
-            <div className="modal-header">
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 12,
-                    background: CAT_COLORS[rec.category],
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 22,
-                  }}
-                >
-                  {rec.emoji}
-                </div>
-                <div>
-                  <div className="modal-title">{rec.name}</div>
-                  <div className="text-sm text-muted">
-                    {CAT_LABELS[rec.category]} · {rec.servings} porción
-                    {rec.servings > 1 ? 'es' : ''} · {rec.prepTime + rec.cookTime} min
+                <div style={{ display: 'flex', borderTop: '1px solid #f1f5f9', paddingTop: '16px', justifyContent: 'space-between' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', opacity: 0.5, textTransform: 'uppercase' }}>Kcal</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{card.kcalPerServing || card.kcal}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', opacity: 0.5, textTransform: 'uppercase' }}>Prot</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{card.proteinasPerServing || card.prot}g</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '11px', opacity: 0.5, textTransform: 'uppercase' }}>CHO</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{card.hidratosPerServing || '—'}g</div>
                   </div>
                 </div>
               </div>
-              <button
-                className="btn btn-ghost btn-icon"
-                onClick={() => setSelected(null)}
-              >
-                ✕
-              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="recipes-sidebar">
+          <div className="card" style={{ padding: '24px', borderRadius: '24px', position: 'sticky', top: '24px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#064e3b', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              📊 Estadísticas
+            </h3>
+            <div style={{ display: 'grid', gap: '16px' }}>
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>Total Recetas</div>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: '#064e3b' }}>{recipes.length}</div>
+              </div>
+              <div style={{ background: '#f0fdf4', padding: '16px', borderRadius: '16px' }}>
+                <div style={{ fontSize: '12px', color: '#15803d', marginBottom: '4px' }}>Más utilizadas</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#166534' }}>Bowl Andino</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recipe Detail Modal */}
+      {selectedRecipe && (
+        <div className="modal-overlay" onClick={() => setSelectedRecipe(null)}>
+          <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">{selectedRecipe.name}</div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setSelectedRecipe(null)}>✕</button>
             </div>
             <div className="modal-body">
-              <div className="grid-2 gap-4">
+              <div className="grid-2 gap-6">
                 <div>
-                  <div className="card-title mb-2">
-                    <span className="icon">📊</span>Valor nutricional por porción
+                  <div style={{ height: '240px', background: CAT_COLORS[selectedRecipe.category] || '#f8fafc', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '100px', marginBottom: '20px' }}>
+                    {selectedRecipe.emoji || '🥗'}
                   </div>
-                  <div
-                    style={{
-                      background:
-                        'linear-gradient(135deg,var(--slate-800),var(--slate-700))',
-                      borderRadius: 10,
-                      padding: 16,
-                      color: '#fff',
-                      marginBottom: 14,
-                    }}
-                  >
-                    <div style={{ textAlign: 'center', marginBottom: 12 }}>
-                      <div
-                        style={{
-                          fontSize: 10,
-                          color: 'var(--slate-400)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '.1em',
-                        }}
-                      >
-                        Calorías por porción
-                      </div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 40 }}>
-                        {rec.kcalPerServing}{' '}
-                        <span style={{ fontSize: 16, fontWeight: 300, opacity: 0.6 }}>
-                          kcal
-                        </span>
-                      </div>
+                  <div className="card-title">Análisis Nutricional</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div className="stat-card" style={{ padding: '12px' }}>
+                      <div className="stat-label">Calorías</div>
+                      <div className="stat-value" style={{ fontSize: '24px' }}>{selectedRecipe.kcalPerServing || selectedRecipe.kcal}</div>
                     </div>
-                    <div className="pie-wrap" style={{ justifyContent: 'center' }}>
-                      <PieChart
-                        pct_p={rec.pctProteinas}
-                        pct_l={rec.pctLipidos}
-                        pct_h={rec.pctHidratos}
-                        size={80}
-                      />
-                      <div className="pie-legend">
-                        <div className="pie-legend-row">
-                          <div
-                            className="pie-legend-dot"
-                            style={{ background: '#ef4444' }}
-                          />
-                          <span className="pie-pct" style={{ color: '#f87171' }}>
-                            {rec.pctProteinas}%
-                          </span>
-                          <span className="pie-name">
-                            Proteínas ({rec.proteinasPerServing}g)
-                          </span>
-                        </div>
-                        <div className="pie-legend-row">
-                          <div
-                            className="pie-legend-dot"
-                            style={{ background: '#3b82f6' }}
-                          />
-                          <span className="pie-pct" style={{ color: '#60a5fa' }}>
-                            {rec.pctHidratos}%
-                          </span>
-                          <span className="pie-name">
-                            Hidratos ({rec.hidratosPerServing}g)
-                          </span>
-                        </div>
-                        <div className="pie-legend-row">
-                          <div
-                            className="pie-legend-dot"
-                            style={{ background: '#f59e0b' }}
-                          />
-                          <span className="pie-pct" style={{ color: '#fbbf24' }}>
-                            {rec.pctLipidos}%
-                          </span>
-                          <span className="pie-name">
-                            Lípidos ({rec.lipidosPerServing}g)
-                          </span>
-                        </div>
-                      </div>
+                    <div className="stat-card" style={{ padding: '12px' }}>
+                      <div className="stat-label">Proteínas</div>
+                      <div className="stat-value" style={{ fontSize: '24px', color: 'var(--red-500)' }}>{selectedRecipe.proteinasPerServing || selectedRecipe.prot}g</div>
                     </div>
                   </div>
-                  <div className="card-title mb-2">
-                    <span className="icon">🏷️</span>Etiquetas
-                  </div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                    {rec.tags.map((t) => (
-                      <span key={t} className="chip">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  {rec.notes && (
-                    <div
-                      style={{
-                        background: 'var(--green-50)',
-                        borderRadius: 8,
-                        padding: 12,
-                        marginTop: 12,
-                        fontSize: 13,
-                        color: 'var(--green-800)',
-                        borderLeft: '3px solid var(--green-400)',
-                      }}
-                    >
-                      💡 {rec.notes}
-                    </div>
-                  )}
                 </div>
                 <div>
-                  <div className="card-title mb-2">
-                    <span className="icon">📝</span>Preparación
+                  <div className="card-title">Preparación</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {selectedRecipe.preparation?.map((step, i) => (
+                      <div key={i} style={{ display: 'flex', gap: '12px' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--green-600)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>{i+1}</div>
+                        <div style={{ fontSize: '14px', lineHeight: '1.6' }}>{step}</div>
+                      </div>
+                    )) || <div className="text-muted">No hay instrucciones registradas.</div>}
                   </div>
-                  {rec.preparation.map((step, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        display: 'flex',
-                        gap: 10,
-                        padding: '8px 0',
-                        borderBottom:
-                          i < rec.preparation.length - 1
-                            ? '1px solid var(--slate-100)'
-                            : 'none',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: '50%',
-                          background: 'var(--green-500)',
-                          color: '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: 11,
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          marginTop: 1,
-                        }}
-                      >
-                        {i + 1}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: 13,
-                          color: 'var(--slate-700)',
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {step}
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function RecipeForm({ onCancel, onSave }) {
+  const [form, setForm] = useState({
+    name: '',
+    category: 'Almuerzo',
+    kcal: '',
+    prot: '',
+    hidratos: '',
+    grasas: '',
+    instructions: '',
+    emoji: '🥗'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      id: Date.now(),
+      ...form,
+      kcalPerServing: form.kcal,
+      proteinasPerServing: form.prot,
+      hidratosPerServing: form.hidratos,
+      lipidosPerServing: form.grasas,
+      preparation: form.instructions.split('\n').filter(s => s.trim()),
+      tags: ['Manual'],
+    });
+  };
+
+  return (
+    <div className="recipe-form-view">
+      <div className="form-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+        <div>
+          <button onClick={onCancel} style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Volver a Recetario</button>
+          <h1 style={{ fontSize: '36px', fontFamily: 'var(--font-display)', color: '#064e3b' }}>Subir Receta</h1>
+          <p className="text-muted">Añade una nueva preparación al catálogo clínico.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <button className="btn btn-outline" onClick={onCancel}>Cancelar</button>
+          <button className="btn btn-primary" onClick={handleSubmit}>Guardar Receta</button>
+        </div>
+      </div>
+
+      <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div className="form-left-col">
+          <div className="card" style={{ padding: '32px', borderRadius: '24px', marginBottom: '32px' }}>
+             <div style={{ marginBottom: '24px' }}>
+               <label className="label">Título de la Receta</label>
+               <input type="text" className="input" placeholder="Ej: Bowl Quinoa Primavera" value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
+             </div>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div>
+                  <label className="label">Categoría</label>
+                  <select className="select" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+                    <option>Desayuno</option>
+                    <option>Almuerzo</option>
+                    <option>Cena</option>
+                    <option>Snacks</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label">Emoji Representativo</label>
+                  <input type="text" className="input" placeholder="🥗" value={form.emoji} onChange={e => setForm({...form, emoji: e.target.value})} />
+                </div>
+             </div>
+          </div>
+
+          <div className="card" style={{ padding: '32px', borderRadius: '24px' }}>
+            <h3 className="card-title">Información Nutricional</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="form-group">
+                <label className="label">Calorías (kcal)</label>
+                <input type="number" className="input" value={form.kcal} onChange={e => setForm({...form, kcal: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="label">Proteínas (g)</label>
+                <input type="number" className="input" value={form.prot} onChange={e => setForm({...form, prot: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="label">Carbos (g)</label>
+                <input type="number" className="input" value={form.hidratos} onChange={e => setForm({...form, hidratos: e.target.value})} />
+              </div>
+              <div className="form-group">
+                <label className="label">Grasas (g)</label>
+                <input type="number" className="input" value={form.grasas} onChange={e => setForm({...form, grasas: e.target.value})} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-right-col" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <div className="card" style={{ flex: 1, padding: '32px', borderRadius: '24px' }}>
+            <h3 className="card-title">Instrucciones (una por línea)</h3>
+            <textarea 
+              className="input" 
+              rows="12" 
+              placeholder="1. Lava los vegetales...&#10;2. Corta en julianas...&#10;3. Saltea a fuego medio..." 
+              style={{ padding: '20px', resize: 'none' }}
+              value={form.instructions}
+              onChange={e => setForm({...form, instructions: e.target.value})}
+            ></textarea>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
