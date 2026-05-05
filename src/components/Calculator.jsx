@@ -87,30 +87,37 @@ export function Calculator() {
     <div className="calculator-clinical">
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
       
-      <div className="clinical-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <span style={{ fontSize: '11px', fontWeight: 800, color: '#064e3b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Herramienta Clínica</span>
-          <h1 style={{ fontSize: '36px', fontWeight: 800, color: '#064e3b', marginTop: '8px' }}>Software de Fórmula Desarrollada - Tabla SARA 2</h1>
+      <div className="clinical-header" style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '32px',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
+        <div style={{ flex: '1', minWidth: '300px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--green-800)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Herramienta Clínica</span>
+          <h1 className="hero-title" style={{ color: 'var(--green-800)', marginTop: '8px', lineHeight: '1.2' }}>Software de Fórmula Desarrollada</h1>
         </div>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '20px' }}>💾</span> Guardar Fórmula
+        <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: 'fit-content' }}>
+          <button className="btn btn-outline btn-sm hide-mobile">
+            💾 Guardar
           </button>
-          <button className="btn" style={{ background: '#064e3b', color: '#fff', padding: '14px 28px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 700 }}>
-            <span>📥</span> Exportar PDF
+          <button className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+            📥 Exportar PDF
           </button>
         </div>
       </div>
 
-      <div className="info-box" style={{ background: '#f0fdf4', borderLeft: '4px solid #064e3b', padding: '24px', borderRadius: '16px', marginBottom: '40px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+      <div className="info-box hide-mobile" style={{ background: 'var(--green-50)', borderLeft: '4px solid var(--green-600)', padding: '24px', borderRadius: '16px', marginBottom: '40px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
         <span style={{ fontSize: '24px', background: '#fff', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>ℹ️</span>
         <div>
-          <h4 style={{ fontWeight: 700, color: '#064e3b', marginBottom: '8px' }}>Cálculo Basado en Tabla SARA 2</h4>
-          <p style={{ color: '#4b5563', fontSize: '14px', lineHeight: 1.6 }}>Los valores nutricionales se calculan automáticamente utilizando una regla de tres simple, basándose en la composición estándar por 100g de alimento según la base de datos SARA.</p>
+          <h4 style={{ fontWeight: 700, color: 'var(--green-900)', marginBottom: '8px' }}>Cálculo Basado en Tabla SARA 2</h4>
+          <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>Los valores nutricionales se calculan automáticamente utilizando una regla de tres simple, basándose en la composición estándar por 100g de alimento según la base de datos SARA.</p>
         </div>
       </div>
 
-      <div className="calculator-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+      <div className="calculator-grid">
         <div className="calc-table-card">
           <div className="card" style={{ padding: '32px', borderRadius: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>

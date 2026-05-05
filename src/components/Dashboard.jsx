@@ -27,39 +27,13 @@ export function Dashboard({ patients, setPage, userProfile }) {
         </button>
       </div>
 
-      <div className="card mb-6" style={{ 
-        height: '220px', 
-        padding: '0', 
-        overflow: 'hidden', 
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        background: 'var(--slate-900)'
-      }}>
-        <img src="/hero-bg.png" style={{ 
-          position: 'absolute', 
-          inset: '0', 
-          width: '100%', 
-          height: '100%', 
-          objectFit: 'cover', 
-          opacity: '0.6' 
-        }} alt="Nutrition" />
-        <div style={{ position: 'relative', zIndex: 1, padding: '40px', color: '#fff' }}>
-          <div style={{ 
-            fontFamily: 'var(--font-display)', 
-            fontSize: '36px', 
-            marginBottom: '8px',
-            textShadow: '0 2px 10px rgba(0,0,0,0.3)'
-          }}>
+      <div className="hero-card mb-6">
+        <img src="/hero-bg.png" className="hero-img" alt="Nutrition" />
+        <div className="hero-content">
+          <div className="hero-title">
             Impulsando la Salud con Datos
           </div>
-          <div style={{ 
-            fontSize: '16px', 
-            opacity: 0.9, 
-            maxWidth: '500px',
-            lineHeight: '1.6',
-            textShadow: '0 1px 4px rgba(0,0,0,0.3)'
-          }}>
+          <div className="hero-text">
             Gestioná tus pacientes, calculá valores exactos con SARA 2 y diseñá planes personalizados de alto impacto nutricional.
           </div>
         </div>
@@ -139,7 +113,7 @@ export function Dashboard({ patients, setPage, userProfile }) {
                 alignItems: 'center',
                 padding: '10px 0',
                 borderBottom:
-                  i < recentPlan.length - 1 ? '1px solid var(--border-light)' : 'none',
+                  (i < recentPlan.length - 1) ? '1px solid var(--border-light)' : 'none',
               }}
             >
               <div>

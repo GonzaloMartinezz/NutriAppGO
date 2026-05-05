@@ -167,7 +167,13 @@ export default function App() {
         </div>
       )}
 
-      <nav className={`sidebar ${!isSidebarOpen ? 'collapsed' : ''}`}>
+      {/* SIDEBAR OVERLAY FOR MOBILE */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
+      <nav className={`sidebar ${!isSidebarOpen ? 'collapsed' : ''} ${isSidebarOpen ? 'open' : ''}`}>
         <button className="sidebar-toggle-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <span style={{ transform: isSidebarOpen ? 'rotate(180deg)' : 'rotate(0deg)', display: 'block' }}>➔</span>
         </button>
@@ -185,16 +191,16 @@ export default function App() {
         <div className="sidebar-nav">
           <div className="nav-section">
             <div className="nav-label">Principal</div>
-            <NavItem icon="🏠" label="Inicio" active={page === 'dashboard'} onClick={() => setPage('dashboard')} collapsed={!isSidebarOpen} />
-            <NavItem icon="📊" label="Calculadora SARA" active={page === 'calculator'} onClick={() => setPage('calculator')} collapsed={!isSidebarOpen} />
-            <NavItem icon="🍴" label="Planes Nutricionales" active={page === 'plans'} onClick={() => setPage('plans')} collapsed={!isSidebarOpen} />
-            <NavItem icon="📖" label="Recetario" active={page === 'recipes'} onClick={() => setPage('recipes')} collapsed={!isSidebarOpen} />
+            <NavItem icon="🏠" label="Inicio" active={page === 'dashboard'} onClick={() => { setPage('dashboard'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon="📊" label="Calculadora SARA" active={page === 'calculator'} onClick={() => { setPage('calculator'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon="🍴" label="Planes Nutricionales" active={page === 'plans'} onClick={() => { setPage('plans'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon="📖" label="Recetario" active={page === 'recipes'} onClick={() => { setPage('recipes'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
           </div>
 
           <div className="nav-section">
             <div className="nav-label">Estudio & Carrera</div>
-            <NavItem icon="📚" label="Biblioteca" active={page === 'library'} onClick={() => setPage('library')} collapsed={!isSidebarOpen} />
-            <NavItem icon="⚙️" label="Configuración" active={page === 'settings'} onClick={() => setPage('settings')} collapsed={!isSidebarOpen} />
+            <NavItem icon="📚" label="Biblioteca" active={page === 'library'} onClick={() => { setPage('library'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon="⚙️" label="Configuración" active={page === 'settings'} onClick={() => { setPage('settings'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
           </div>
         </div>
 
@@ -211,7 +217,10 @@ export default function App() {
 
       <main className="main">
         <header className="topbar">
-          <div className="topbar-title">{titles[page] || 'NutriApp'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>☰</button>
+            <div className="topbar-title">{titles[page] || 'NutriApp'}</div>
+          </div>
           <div className="topbar-actions">
             <div className="input-icon" style={{ width: '280px' }}>
               <span className="icon">🔍</span>

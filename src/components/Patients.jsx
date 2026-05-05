@@ -100,22 +100,17 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
   return (
     <div>
       {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '280px 1fr',
-          gap: 24,
-        }}
-      >
-        {/* Patient List */}
+    <div className="patients-layout">
+        {/* Patient List - Hidden on mobile if a patient is selected */}
         <div
-          className="card"
+          className={`card ${selected ? 'hide-mobile' : ''}`}
           style={{
             padding: 12,
             display: 'flex',
             flexDirection: 'column',
             gap: 8,
             overflow: 'hidden',
+            height: 'fit-content'
           }}
         >
           <div
@@ -169,7 +164,7 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
           </div>
         </div>
 
-        {/* Patient Detail */}
+        {/* Patient Detail - Header with Back Button for Mobile */}
         {pat ? (
           <div
             style={{
@@ -179,6 +174,13 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
               gap: 16,
             }}
           >
+            <button 
+              className="btn btn-outline btn-sm show-mobile" 
+              style={{ marginBottom: 8, width: 'fit-content' }}
+              onClick={() => setSelected(null)}
+            >
+              ← Volver a la lista
+            </button>
             {/* Header */}
             <div
               className="card"
