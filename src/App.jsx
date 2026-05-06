@@ -57,30 +57,10 @@ const NavItem = ({ icon: Icon, label, path, active, onClick, collapsed }) => (
   </Link>
 );
 
-export default function App() {
+function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, loading: authLoading } = useAuth();
-
-  if (authLoading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, var(--green-600) 0%, var(--green-700) 100%)'
-      }}>
-        <div style={{ color: '#fff', textAlign: 'center' }}>
-          <div style={{ fontSize: '18px', marginBottom: '16px' }}>Cargando...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Auth />;
-  }
+  const { user, logout } = useAuth();
 
   // Sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -330,4 +310,30 @@ export default function App() {
       </main>
     </div>
   );
+}
+
+export default function App() {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, var(--green-600) 0%, var(--green-700) 100%)'
+      }}>
+        <div style={{ color: '#fff', textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '16px' }}>Cargando...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
+
+  return <AppContent />;
 }
