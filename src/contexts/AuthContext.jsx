@@ -6,7 +6,22 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('nutri_users');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) return JSON.parse(saved);
+
+    // Precargar admin user
+    const adminUser = {
+      id: 'admin-001',
+      email: 'admin@nutriapp.com',
+      password: 'adminmartinez',
+      fullName: 'Administrador NutriApp',
+      role: 'Nutricionista',
+      matricula: 'NUT-ADMIN',
+      especializacion: 'Administración',
+      isAdmin: true,
+      avatar: 'AN',
+      createdAt: new Date().toISOString()
+    };
+    return [adminUser];
   });
   const [loading, setLoading] = useState(true);
 

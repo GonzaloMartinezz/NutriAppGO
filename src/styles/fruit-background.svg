@@ -1,0 +1,82 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" opacity="0.15">
+  <!-- Manzanas -->
+  <circle cx="150" cy="100" r="35" fill="#E74C3C"/>
+  <ellipse cx="150" cy="90" rx="8" ry="12" fill="#27AE60"/>
+
+  <circle cx="950" cy="600" r="40" fill="#E74C3C"/>
+  <ellipse cx="950" cy="588" rx="10" ry="14" fill="#27AE60"/>
+
+  <!-- Plátanos -->
+  <path d="M 300 200 Q 320 180 340 200" stroke="#F1C40F" stroke-width="35" fill="none" stroke-linecap="round"/>
+  <path d="M 1000 150 Q 1020 130 1040 150" stroke="#F1C40F" stroke-width="30" fill="none" stroke-linecap="round"/>
+
+  <!-- Fresas -->
+  <circle cx="500" cy="150" r="25" fill="#E74C3C"/>
+  <ellipse cx="490" cy="145" rx="4" ry="6" fill="#F39C12"/>
+  <ellipse cx="495" cy="140" rx="4" ry="6" fill="#F39C12"/>
+  <ellipse cx="500" cy="142" rx="4" ry="6" fill="#F39C12"/>
+  <ellipse cx="505" cy="140" rx="4" ry="6" fill="#F39C12"/>
+  <ellipse cx="510" cy="145" rx="4" ry="6" fill="#F39C12"/>
+  <path d="M 495 120 L 505 120 L 510 130 L 500 135 L 490 130 Z" fill="#27AE60"/>
+
+  <circle cx="100" cy="650" r="22" fill="#E74C3C"/>
+  <ellipse cx="90" cy="647" rx="3" ry="5" fill="#F39C12"/>
+  <ellipse cx="95" cy="642" rx="3" ry="5" fill="#F39C12"/>
+  <ellipse cx="100" cy="644" rx="3" ry="5" fill="#F39C12"/>
+  <ellipse cx="105" cy="642" rx="3" ry="5" fill="#F39C12"/>
+  <ellipse cx="110" cy="647" rx="3" ry="5" fill="#F39C12"/>
+  <path d="M 95 622 L 105 622 L 110 632 L 100 637 L 90 632 Z" fill="#27AE60"/>
+
+  <!-- Naranjas -->
+  <circle cx="700" cy="250" r="32" fill="#F39C12"/>
+  <circle cx="705" cy="248" r="4" fill="#E67E22"/>
+  <circle cx="695" cy="248" r="4" fill="#E67E22"/>
+  <circle cx="700" cy="255" r="4" fill="#E67E22"/>
+
+  <circle cx="1050" cy="450" r="28" fill="#F39C12"/>
+  <circle cx="1055" cy="448" r="3" fill="#E67E22"/>
+  <circle cx="1045" cy="448" r="3" fill="#E67E22"/>
+  <circle cx="1050" cy="455" r="3" fill="#E67E22"/>
+
+  <!-- Sandía -->
+  <circle cx="400" cy="550" r="38" fill="#27AE60"/>
+  <circle cx="400" cy="550" r="32" fill="#E74C3C"/>
+  <circle cx="385" cy="540" r="4" fill="#27AE60"/>
+  <circle cx="395" cy="545" r="4" fill="#27AE60"/>
+  <circle cx="405" cy="545" r="4" fill="#27AE60"/>
+  <circle cx="415" cy="540" r="4" fill="#27AE60"/>
+  <circle cx="395" cy="555" r="4" fill="#27AE60"/>
+  <circle cx="405" cy="560" r="4" fill="#27AE60"/>
+
+  <!-- Piña -->
+  <ellipse cx="600" cy="650" rx="25" ry="35" fill="#F1C40F"/>
+  <path d="M 575 620 L 590 610 L 605 615 L 610 625 L 600 630 L 585 625 Z" fill="#27AE60"/>
+
+  <!-- Uvas -->
+  <g>
+    <circle cx="250" cy="450" r="5" fill="#8E44AD"/>
+    <circle cx="260" cy="450" r="5" fill="#8E44AD"/>
+    <circle cx="270" cy="450" r="5" fill="#8E44AD"/>
+    <circle cx="255" cy="460" r="5" fill="#8E44AD"/>
+    <circle cx="265" cy="460" r="5" fill="#8E44AD"/>
+    <circle cx="260" cy="470" r="5" fill="#8E44AD"/>
+  </g>
+
+  <g>
+    <circle cx="850" cy="300" r="4" fill="#8E44AD"/>
+    <circle cx="858" cy="300" r="4" fill="#8E44AD"/>
+    <circle cx="866" cy="300" r="4" fill="#8E44AD"/>
+    <circle cx="854" cy="308" r="4" fill="#8E44AD"/>
+    <circle cx="862" cy="308" r="4" fill="#8E44AD"/>
+    <circle cx="858" cy="316" r="4" fill="#8E44AD"/>
+  </g>
+
+  <!-- Limón -->
+  <ellipse cx="50" cy="400" rx="20" ry="24" fill="#F1C40F"/>
+  <ellipse cx="52" cy="398" rx="4" ry="6" fill="#F39C12"/>
+
+  <!-- Cereza -->
+  <circle cx="750" cy="50" r="12" fill="#C0392B"/>
+  <circle cx="765" cy="50" r="12" fill="#C0392B"/>
+  <path d="M 757 38 Q 760 35 763 38" stroke="#27AE60" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

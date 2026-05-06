@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { RoleSelector } from '../components/RoleSelector';
 import { Utensils, Mail, Lock, User, FileText, BookOpen, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import '../styles/auth.css';
 
@@ -25,6 +26,9 @@ export function Auth() {
     matricula: '',
     especializacion: ''
   });
+
+  // Role selector modal
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -212,15 +216,22 @@ export function Auth() {
 
                 <div className="form-group">
                   <label htmlFor="role">Tipo de cuenta</label>
-                  <select
+                  <button
+                    type="button"
                     id="role"
                     className="form-select"
-                    value={registerData.role}
-                    onChange={(e) => setRegisterData({ ...registerData, role: e.target.value })}
+                    onClick={() => setRoleModalOpen(true)}
+                    style={{
+                      background: 'var(--bg-input)',
+                      border: '2px solid var(--border)',
+                      color: 'var(--text-main)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      appearance: 'none'
+                    }}
                   >
-                    <option value="Estudiante">Estudiante</option>
-                    <option value="Nutricionista">Nutricionista</option>
-                  </select>
+                    {registerData.role === 'Estudiante' ? '👨‍🎓 Estudiante' : '👨‍⚕️ Nutricionista Profesional'}
+                  </button>
                 </div>
 
                 {registerData.role === 'Nutricionista' && (
@@ -352,6 +363,14 @@ export function Auth() {
           <p>NutriApp © 2026 - Plataforma Profesional</p>
         </div>
       </div>
+
+      {/* Role Selector Modal */}
+      <RoleSelector
+        isOpen={roleModalOpen && !isLogin}
+        selectedRole={registerData.role}
+        onSelect={(role) => setRegisterData({ ...registerData, role })}
+        onClose={() => setRoleModalOpen(false)}
+      />
     </div>
   );
 }
