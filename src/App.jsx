@@ -31,6 +31,7 @@ import {
 
 import { useAuth } from './contexts/AuthContext';
 import { Auth } from './pages/Auth';
+import { AdminDashboard } from './components/AdminDashboard';
 import { Dashboard } from './components/Dashboard';
 import { Calculator } from './components/Calculator';
 import { Patients } from './components/Patients';
@@ -40,6 +41,7 @@ import { Library } from './components/Library';
 import { Settings } from './components/Settings';
 import { Desarrollos } from './components/Desarrollos';
 import { ConfirmModal } from './components/ConfirmModal';
+import './styles/patients-responsive.css';
 
 // Initial Data Imports
 import { SAMPLE_PATIENTS } from './data/patients';
@@ -289,7 +291,7 @@ function AppContent() {
 
         <div className="page">
           <Routes>
-            <Route path="/" element={<Dashboard patients={patients} userProfile={userProfile} />} />
+            <Route path="/" element={user.isAdmin ? <AdminDashboard patients={patients} recipes={recipes} /> : <Dashboard patients={patients} userProfile={userProfile} />} />
             <Route path="/calculator" element={<Calculator onSave={(dev) => setDevelopments(prev => [dev, ...prev])} triggerConfirm={triggerConfirm} />} />
             <Route path="/patients" element={<Patients patients={patients} setPatients={setPatients} triggerConfirm={triggerConfirm} />} />
             <Route path="/plans" element={<Plans patients={patients} />} />

@@ -1,0 +1,214 @@
+/* Patients Responsive Design */
+
+.patients-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  height: 100%;
+}
+
+/* Tablet: 768px */
+@media (max-width: 1024px) {
+  .patients-layout {
+    grid-template-columns: 280px 1fr;
+    gap: 12px;
+  }
+
+  .patient-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .patient-row {
+    padding: 10px 8px;
+  }
+}
+
+/* Mobile: 768px and below */
+@media (max-width: 768px) {
+  .patients-layout {
+    display: block;
+    height: auto;
+  }
+
+  /* Hide patient list when detail is shown */
+  .patients-layout > .card.hide-mobile {
+    display: none;
+  }
+
+  /* Patient detail full width */
+  .patients-layout > div:nth-child(2) {
+    display: block;
+  }
+
+  /* Show back button on mobile */
+  .show-mobile {
+    display: inline-flex !important;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Patient card responsive */
+  .card {
+    padding: 16px !important;
+  }
+
+  /* Header layout responsive */
+  .card[style*="background: linear-gradient"] {
+    padding: 16px !important;
+  }
+
+  .card[style*="background: linear-gradient"] > div {
+    flex-direction: column;
+    gap: 12px !important;
+  }
+
+  .card[style*="background: linear-gradient"] > div > div:last-child {
+    text-align: left;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+  }
+
+  /* Grid 2 columns to 1 on mobile */
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .patient-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
+
+  /* Form responsive */
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .input {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Modal responsive */
+  .modal {
+    width: 95vw;
+    max-width: 95vw;
+    max-height: 90vh;
+    padding: 20px;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Patient list when shown */
+  .patients-layout > .card:first-child {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .patient-row {
+    padding: 8px 6px;
+    gap: 8px;
+  }
+
+  .patient-name {
+    font-size: 14px;
+  }
+
+  .patient-meta {
+    font-size: 11px;
+  }
+
+  /* Section header responsive */
+  .section-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .section-header button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Badge responsive */
+  .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  /* Anthropometry grid responsive */
+  [style*="gridTemplateColumns: '1fr 1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Chart responsive */
+  .chart-container {
+    height: 250px;
+  }
+}
+
+/* Extra small phones: 375px */
+@media (max-width: 375px) {
+  .patients-layout > .card {
+    padding: 12px !important;
+  }
+
+  .patient-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .patient-row {
+    padding: 6px 4px;
+  }
+
+  .input {
+    padding: 9px 10px;
+    font-size: 15px;
+  }
+
+  .modal {
+    width: 100vw;
+    padding: 16px;
+    max-height: 95vh;
+  }
+
+  .btn {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .section-header {
+    gap: 6px;
+  }
+}
+
+/* Portrait orientation optimization */
+@media (max-height: 600px) and (max-width: 768px) {
+  .patients-layout > div:nth-child(2) {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .card {
+    padding: 12px !important;
+  }
+}
