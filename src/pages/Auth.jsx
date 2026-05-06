@@ -104,7 +104,7 @@ export function Auth() {
           <div className="auth-logo-icon">
             <Utensils size={32} strokeWidth={2.5} />
           </div>
-          <h1>NutriApp</h1>
+          <h1>NutriAppGO</h1>
           <p>Plataforma Profesional de Nutrición</p>
         </div>
 
