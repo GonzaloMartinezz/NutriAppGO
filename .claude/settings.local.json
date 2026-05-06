@@ -11,7 +11,11 @@
       "Bash(git pull *)",
       "Bash(git merge *)",
       "Bash(git commit -m 'Agregar documentación completa del sistema de autenticación *)",
-      "Bash(git commit -m 'Arreglar Rules of Hooks en App.jsx *)"
+      "Bash(git commit -m 'Arreglar Rules of Hooks en App.jsx *)",
+      "Bash(timeout 5 npm start)",
+      "Bash(curl -s http://localhost:5000/health)",
+      "Bash(curl -s -X POST http://localhost:5000/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@nutriapp.com\",\"password\":\"adminmartinez\"}')",
+      "Bash(python3 -m json.tool)"
     ]
   }
 }

@@ -1,99 +1,127 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
+const API_BASE = 'http://localhost:5000/api';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('nutri_users');
-    if (saved) return JSON.parse(saved);
-
-    // Precargar admin user
-    const adminUser = {
-      id: 'admin-001',
-      email: 'admin@nutriapp.com',
-      password: 'adminmartinez',
-      fullName: 'Administrador NutriApp',
-      role: 'Nutricionista',
-      matricula: 'NUT-ADMIN',
-      especializacion: 'Administración',
-      isAdmin: true,
-      avatar: 'AN',
-      createdAt: new Date().toISOString()
-    };
-    return [adminUser];
-  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('nutri_current_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem('nutriapp_token');
+    if (token) {
+      fetchUser(token);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('nutri_users', JSON.stringify(users));
-  }, [users]);
-
-  const register = (email, password, fullName, role, matricula = '', especializacion = '') => {
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-      return { success: false, error: 'El email ya está registrado' };
+  const fetchUser = async (token) => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const { user: userData } = await response.json();
+        setUser(userData);
+      } else {
+        localStorage.removeItem('nutriapp_token');
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      localStorage.removeItem('nutriapp_token');
+    } finally {
+      setLoading(false);
     }
-
-    const newUser = {
-      id: Date.now().toString(),
-      email,
-      password,
-      fullName,
-      role,
-      matricula: matricula || '',
-      especializacion: especializacion || '',
-      isAdmin: role === 'Nutricionista' && matricula.startsWith('NUT'),
-      avatar: fullName.split(' ').map(n => n[0]).join(''),
-      createdAt: new Date().toISOString()
-    };
-
-    setUsers([...users, newUser]);
-    setUser(newUser);
-    localStorage.setItem('nutri_current_user', JSON.stringify(newUser));
-
-    return { success: true };
   };
 
-  const login = (email, password) => {
-    const foundUser = users.find(u => u.email === email && u.password === password);
-    if (!foundUser) {
-      return { success: false, error: 'Email o contraseña incorrectos' };
+  const register = async (email, password, fullName, role, matricula = '', especializacion = '') => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          fullName,
+          role,
+          matricula: role === 'Nutricionista' ? matricula : undefined,
+          especializacion: role === 'Nutricionista' ? especializacion : undefined,
+          avatar: fullName.split(' ').map(n => n[0]).join('')
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        return { success: false, error: data.error || 'Error en registro' };
+      }
+
+      const { user: userData, token } = await response.json();
+      setUser(userData);
+      localStorage.setItem('nutriapp_token', token);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Register error:', error);
+      return { success: false, error: 'Error en la conexión' };
     }
+  };
 
-    setUser(foundUser);
-    localStorage.setItem('nutri_current_user', JSON.stringify(foundUser));
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-    return { success: true };
+      if (!response.ok) {
+        const data = await response.json();
+        return { success: false, error: data.error || 'Error en login' };
+      }
+
+      const { user: userData, token } = await response.json();
+      setUser(userData);
+      localStorage.setItem('nutriapp_token', token);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'Error en la conexión' };
+    }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('nutri_current_user');
+    localStorage.removeItem('nutriapp_token');
   };
 
-  const updateUserProfile = (updates) => {
+  const updateUserProfile = async (updates) => {
     if (!user) return;
 
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem('nutri_current_user', JSON.stringify(updatedUser));
+    try {
+      const token = localStorage.getItem('nutriapp_token');
+      const response = await fetch(`${API_BASE}/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
 
-    setUsers(users.map(u => u.id === user.id ? updatedUser : u));
+      if (response.ok) {
+        const { user: userData } = await response.json();
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Update profile error:', error);
+    }
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      users,
       loading,
       register,
       login,

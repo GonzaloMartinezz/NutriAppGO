@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   UserPlus, 
   Search, 
@@ -52,6 +52,30 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
     hipCirc: '',
   });
   const [toast, setToast] = useState(null);
+  const API_BASE = 'http://localhost:5000/api';
+
+  const getToken = () => localStorage.getItem('nutriapp_token');
+
+  useEffect(() => {
+    if (patients.length === 0) {
+      loadPatients();
+    }
+  }, []);
+
+  const loadPatients = async () => {
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_BASE}/patients`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const { patients: data } = await response.json();
+        setPatients(data);
+      }
+    } catch (error) {
+      console.error('Error loading patients:', error);
+    }
+  };
 
   const filtered = patients.filter(
     (p) =>
@@ -60,59 +84,81 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
   );
   const pat = selected ? patients.find((p) => p.id === selected) : null;
 
-  const addAnthro = () => {
+  const addAnthro = async () => {
     if (!anthroForm.weight || !anthroForm.height) return;
-    const w = parseFloat(anthroForm.weight),
-      h = parseFloat(anthroForm.height);
-    const { imc, cat } = calcIMC(w, h);
-    const icc =
-      anthroForm.waistCirc && anthroForm.hipCirc
-        ? +(anthroForm.waistCirc / anthroForm.hipCirc).toFixed(2)
-        : null;
-    const newRec = {
-      date: new Date().toISOString().slice(0, 10),
-      weight: w,
-      height: h,
-      imc,
-      imcCategory: cat,
-      waistCirc: parseFloat(anthroForm.waistCirc) || null,
-      hipCirc: parseFloat(anthroForm.hipCirc) || null,
-      icc,
-    };
-    setPatients((prev) =>
-      prev.map((p) =>
-        p.id === selected ? { ...p, anthropometry: [...p.anthropometry, newRec] } : p
-      )
-    );
-    setAnthroForm({ weight: '', height: '', waistCirc: '', hipCirc: '' });
-    setShowAnthro(false);
-    triggerConfirm('Medición Guardada', 'Los nuevos datos antropométricos han sido registrados en la evolución del paciente.');
+
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_BASE}/patients/${selected}/anthropometry`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          weight: parseFloat(anthroForm.weight),
+          height: parseFloat(anthroForm.height),
+          chest: anthroForm.waistCirc ? parseFloat(anthroForm.waistCirc) : null,
+          waist: anthroForm.waistCirc ? parseFloat(anthroForm.waistCirc) : null,
+          hip: anthroForm.hipCirc ? parseFloat(anthroForm.hipCirc) : null
+        })
+      });
+
+      if (response.ok) {
+        const { patient } = await response.json();
+        setPatients((prev) =>
+          prev.map((p) => p.id === selected ? patient : p)
+        );
+        setAnthroForm({ weight: '', height: '', waistCirc: '', hipCirc: '' });
+        setShowAnthro(false);
+        triggerConfirm('Medición Guardada', 'Los nuevos datos antropométricos han sido registrados en la evolución del paciente.');
+      } else {
+        triggerConfirm('Error', 'No se pudo agregar la medición');
+      }
+    } catch (error) {
+      console.error('Error adding anthropometry:', error);
+      triggerConfirm('Error', 'Error en la conexión');
+    }
   };
 
-  const handleAddPatient = (e) => {
+  const handleAddPatient = async (e) => {
     e.preventDefault();
-    if (!newPatient.firstName || !newPatient.lastName) return;
-    
-    const p = {
-      id: `P${Date.now()}`,
-      ...newPatient,
-      pathologies: newPatient.pathologies.split(',').map(s => s.trim()).filter(s => s),
-      objectives: newPatient.objectives.split(',').map(s => s.trim()).filter(s => s),
-      allergies: [],
-      medications: [],
-      contact: { email: newPatient.email, phone: newPatient.phone },
-      status: 'ACTIVE',
-      createdAt: new Date().toISOString().slice(0, 10),
-      anthropometry: [],
-      physicalActivity: newPatient.activity,
-      requirements: { eer: 2000, proteins_g: 100, proteins_pct: 20, carbs_g: 250, carbs_pct: 50, fats_g: 66, fats_pct: 30, fiber_g: 25 }
-    };
-    
-    setPatients(prev => [p, ...prev]);
-    setShowForm(false);
-    setNewPatient({ firstName: '', lastName: '', dni: '', birthDate: '', sex: 'F', occupation: '', email: '', phone: '', pathologies: '', objectives: '', activity: 'MODERADO' });
-    triggerConfirm('Paciente Registrado', `Se ha creado la ficha de ${p.firstName} ${p.lastName} con éxito.`);
-    setSelected(p.id);
+    if (!newPatient.firstName || !newPatient.lastName || !newPatient.dni) return;
+
+    try {
+      const token = getToken();
+      const response = await fetch(`${API_BASE}/patients`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: newPatient.firstName,
+          lastName: newPatient.lastName,
+          dni: newPatient.dni,
+          email: newPatient.email,
+          phone: newPatient.phone,
+          age: newPatient.birthDate ? new Date().getFullYear() - new Date(newPatient.birthDate).getFullYear() : null,
+          gender: newPatient.sex,
+          observations: newPatient.pathologies || ''
+        })
+      });
+
+      if (response.ok) {
+        const { patient } = await response.json();
+        setPatients(prev => [patient, ...prev]);
+        setShowForm(false);
+        setNewPatient({ firstName: '', lastName: '', dni: '', birthDate: '', sex: 'F', occupation: '', email: '', phone: '', pathologies: '', objectives: '', activity: 'MODERADO' });
+        triggerConfirm('Paciente Registrado', `Se ha creado la ficha de ${patient.firstName} ${patient.lastName} con éxito.`);
+        setSelected(patient.id);
+      } else {
+        triggerConfirm('Error', 'No se pudo registrar el paciente');
+      }
+    } catch (error) {
+      console.error('Error adding patient:', error);
+      triggerConfirm('Error', 'Error en la conexión');
+    }
   };
 
   return (

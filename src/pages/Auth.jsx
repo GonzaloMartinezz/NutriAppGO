@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { RoleSelector } from '../components/RoleSelector';
-import { Utensils, Mail, Lock, User, FileText, BookOpen, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Utensils, Mail, Lock, User, FileText, BookOpen, AlertCircle, Eye, EyeOff, Chrome, Apple } from 'lucide-react';
 import '../styles/auth.css';
 
 export function Auth() {
@@ -133,6 +133,7 @@ export function Auth() {
                       placeholder="tu@email.com"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                      autocomplete="email"
                       required
                     />
                   </div>
@@ -148,6 +149,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                      autocomplete="current-password"
                       required
                     />
                     <button
@@ -168,6 +170,36 @@ export function Auth() {
                   {loading ? 'Iniciando sesión...' : 'Inicia sesión'}
                 </button>
               </form>
+
+              <div className="oauth-buttons">
+                <button type="button" className="oauth-button" title="Continuar con Google">
+                  <Chrome size={18} />
+                  <span>Google</span>
+                </button>
+                <button type="button" className="oauth-button" title="Continuar con Apple">
+                  <Apple size={18} />
+                  <span>Apple</span>
+                </button>
+              </div>
+
+              <div style={{ textAlign: 'right', marginTop: '16px' }}>
+                <button
+                  type="button"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#cddc39',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#d4e157'}
+                  onMouseLeave={(e) => e.target.style.color = '#cddc39'}
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
 
               <div className="auth-divider">
                 <span>¿No tienes cuenta?</span>
@@ -209,6 +241,7 @@ export function Auth() {
                       placeholder="Tu nombre completo"
                       value={registerData.fullName}
                       onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
+                      autocomplete="name"
                       required
                     />
                   </div>
@@ -281,6 +314,7 @@ export function Auth() {
                       placeholder="tu@email.com"
                       value={registerData.email}
                       onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                      autocomplete="email"
                       required
                     />
                   </div>
@@ -296,6 +330,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={registerData.password}
                       onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                      autocomplete="new-password"
                       required
                     />
                     <button
@@ -318,6 +353,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={registerData.confirmPassword}
                       onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
+                      autocomplete="new-password"
                       required
                     />
                   </div>
