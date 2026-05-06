@@ -1,33 +1,36 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Routes, 
-  Route, 
-  Link, 
-  useLocation, 
+import {
+  Routes,
+  Route,
+  Link,
+  useLocation,
   useNavigate,
   Navigate
 } from 'react-router-dom';
-import { 
-  Home, 
-  Calculator as CalcIcon, 
-  Users, 
-  Utensils, 
-  BookOpen, 
-  Settings as SettingsIcon, 
-  Bell, 
-  Search, 
-  Moon, 
-  Sun, 
-  ChevronLeft, 
+import {
+  Home,
+  Calculator as CalcIcon,
+  Users,
+  Utensils,
+  BookOpen,
+  Settings as SettingsIcon,
+  Bell,
+  Search,
+  Moon,
+  Sun,
+  ChevronLeft,
   ChevronRight,
   Menu,
   User,
   X,
   Library as LibraryIcon,
   ChefHat,
-  FolderOpen
+  FolderOpen,
+  LogOut
 } from 'lucide-react';
 
+import { useAuth } from './contexts/AuthContext';
+import { Auth } from './pages/Auth';
 import { Dashboard } from './components/Dashboard';
 import { Calculator } from './components/Calculator';
 import { Patients } from './components/Patients';
@@ -57,7 +60,28 @@ const NavItem = ({ icon: Icon, label, path, active, onClick, collapsed }) => (
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const { user, logout, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, var(--green-600) 0%, var(--green-700) 100%)'
+      }}>
+        <div style={{ color: '#fff', textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '16px' }}>Cargando...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
+
   // Sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -66,7 +90,7 @@ export default function App() {
     return saved === 'dark';
   });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '' });
-  
+
   // Data state
   const [patients, setPatients] = useState(() => {
     const saved = localStorage.getItem('nutri_patients');
@@ -83,23 +107,21 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [userProfile, setUserProfile] = useState(() => {
-    const saved = localStorage.getItem('nutri_profile');
-    return saved ? JSON.parse(saved) : {
-      name: 'Valeria Rodríguez',
-      role: 'Nutricionista',
-      mn: '12345',
-      avatar: 'VR',
-      email: 'valeria@nutriapp.com'
-    };
-  });
-
   const [searchQuery, setSearchQuery] = useState('');
+
+  // User profile from authenticated user
+  const userProfile = {
+    name: user.fullName,
+    role: user.role,
+    mn: user.matricula,
+    avatar: user.avatar,
+    email: user.email,
+    isAdmin: user.isAdmin
+  };
 
   // Sync state to local storage
   useEffect(() => { localStorage.setItem('nutri_patients', JSON.stringify(patients)); }, [patients]);
   useEffect(() => { localStorage.setItem('nutri_recipes', JSON.stringify(recipes)); }, [recipes]);
-  useEffect(() => { localStorage.setItem('nutri_profile', JSON.stringify(userProfile)); }, [userProfile]);
   useEffect(() => { localStorage.setItem('nutri_developments', JSON.stringify(developments)); }, [developments]);
 
   useEffect(() => {
@@ -273,6 +295,11 @@ export default function App() {
                   <button className="dropdown-item" onClick={() => { navigate('/settings'); setIsUserMenuOpen(false); handleNavClick(); }}>
                     <SettingsIcon size={18} />
                     <span>Configuración</span>
+                  </button>
+                  <div style={{ height: '1px', background: 'var(--border)', margin: '8px 0' }} />
+                  <button className="dropdown-item" onClick={() => { logout(); setIsUserMenuOpen(false); }}>
+                    <LogOut size={18} />
+                    <span>Cerrar sesión</span>
                   </button>
                 </div>
               )}

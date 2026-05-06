@@ -1,20 +1,36 @@
 import React, { useState } from 'react';
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  Globe, 
-  Camera, 
+import {
+  User,
+  Bell,
+  Shield,
+  CreditCard,
+  Globe,
+  Camera,
   Trash2,
   Save,
   RotateCcw,
   Zap
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { Toast } from './Toast';
 
 export function Settings({ userProfile, setUserProfile, triggerConfirm }) {
-  const [formData, setFormData] = useState({ ...userProfile });
+  const { user, updateUserProfile } = useAuth();
+  const currentUser = userProfile || {
+    name: user?.fullName,
+    mn: user?.matricula,
+    role: user?.role,
+    email: user?.email,
+    avatar: user?.avatar
+  };
+
+  const [formData, setFormData] = useState({
+    fullName: currentUser.name,
+    matricula: currentUser.mn,
+    role: currentUser.role,
+    email: currentUser.email,
+    avatar: currentUser.avatar
+  });
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('Perfil');
 
@@ -25,10 +41,14 @@ export function Settings({ userProfile, setUserProfile, triggerConfirm }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setUserProfile({ 
-      ...formData, 
-      avatar: formData.name ? formData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??' 
-    });
+    const updatedData = {
+      fullName: formData.fullName,
+      matricula: formData.matricula,
+      role: formData.role,
+      email: formData.email,
+      avatar: formData.fullName ? formData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??'
+    };
+    updateUserProfile(updatedData);
     if (triggerConfirm) {
       triggerConfirm('Configuración Actualizada', 'Los cambios en tu perfil profesional se han guardado correctamente.');
     } else {
@@ -109,19 +129,19 @@ export function Settings({ userProfile, setUserProfile, triggerConfirm }) {
                 <div className="grid-2 gap-4" style={{ marginBottom: '24px' }}>
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Nombre Profesional</label>
-                    <input className="input" name="name" value={formData.name} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
+                    <input className="input" name="fullName" value={formData.fullName} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
                   </div>
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Matrícula (MN/MP)</label>
-                    <input className="input" name="mn" value={formData.mn} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
+                    <input className="input" name="matricula" value={formData.matricula} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
                   </div>
                   <div className="form-group">
-                    <label className="label" style={{ fontSize: '12px' }}>Especialidad</label>
-                    <input className="input" name="role" value={formData.role} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
+                    <label className="label" style={{ fontSize: '12px' }}>Tipo de Cuenta</label>
+                    <input className="input" name="role" value={formData.role} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} disabled />
                   </div>
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Email de Trabajo</label>
-                    <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
+                    <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} disabled />
                   </div>
                 </div>
 
@@ -138,7 +158,13 @@ export function Settings({ userProfile, setUserProfile, triggerConfirm }) {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setFormData({ ...userProfile })}>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setFormData({
+                    fullName: currentUser.name,
+                    matricula: currentUser.mn,
+                    role: currentUser.role,
+                    email: currentUser.email,
+                    avatar: currentUser.avatar
+                  })}>
                     <RotateCcw size={14} />
                     Descartar
                   </button>
