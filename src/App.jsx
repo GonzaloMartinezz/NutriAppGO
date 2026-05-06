@@ -316,7 +316,7 @@ export default function App() {
             <Route path="/recipes" element={<Recipes recipes={recipes} setRecipes={setRecipes} triggerConfirm={triggerConfirm} />} />
             <Route path="/library" element={<Library />} />
             <Route path="/developments" element={<Desarrollos developments={developments} setDevelopments={setDevelopments} triggerConfirm={triggerConfirm} />} />
-            <Route path="/settings" element={<Settings userProfile={userProfile} setUserProfile={setUserProfile} triggerConfirm={triggerConfirm} />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

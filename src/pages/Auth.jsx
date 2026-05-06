@@ -51,8 +51,14 @@ export function Auth() {
     setError('');
     setLoading(true);
 
-    if (!registerData.email || !registerData.password || !registerData.fullName || !registerData.matricula) {
-      setError('Por favor completa todos los campos');
+    if (!registerData.email || !registerData.password || !registerData.fullName) {
+      setError('Por favor completa todos los campos obligatorios');
+      setLoading(false);
+      return;
+    }
+
+    if (registerData.role === 'Nutricionista' && (!registerData.matricula || !registerData.especializacion)) {
+      setError('Como nutricionista debes adjuntar matrícula y especialización');
       setLoading(false);
       return;
     }
@@ -170,6 +176,7 @@ export function Auth() {
                   setIsLogin(false);
                   setError('');
                   setLoginData({ email: '', password: '' });
+                  setShowPassword(false);
                 }}
               >
                 Crear nueva cuenta
@@ -216,40 +223,42 @@ export function Auth() {
                   </select>
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="matricula">Matrícula / Legajo</label>
-                  <div className="input-icon">
-                    <FileText size={18} />
-                    <input
-                      id="matricula"
-                      type="text"
-                      placeholder={registerData.role === 'Nutricionista' ? 'NUT-12345' : 'EST-12345'}
-                      value={registerData.matricula}
-                      onChange={(e) => setRegisterData({ ...registerData, matricula: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <small className="help-text">
-                    {registerData.role === 'Nutricionista'
-                      ? 'Ej: NUT-12345 (Nutricionista con matrícula)'
-                      : 'Ej: EST-12345 (Legajo estudiantil)'}
-                  </small>
-                </div>
+                {registerData.role === 'Nutricionista' && (
+                  <>
+                    <div className="form-group">
+                      <label htmlFor="matricula">Matrícula Profesional *</label>
+                      <div className="input-icon">
+                        <FileText size={18} />
+                        <input
+                          id="matricula"
+                          type="text"
+                          placeholder="NUT-12345"
+                          value={registerData.matricula}
+                          onChange={(e) => setRegisterData({ ...registerData, matricula: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <small className="help-text">
+                        Ej: NUT-12345 (con NUT al inicio para acceso de admin)
+                      </small>
+                    </div>
 
-                <div className="form-group">
-                  <label htmlFor="especializacion">Especialización</label>
-                  <div className="input-icon">
-                    <BookOpen size={18} />
-                    <input
-                      id="especializacion"
-                      type="text"
-                      placeholder={registerData.role === 'Nutricionista' ? 'Ej: Nutrición Deportiva' : 'Ej: Nutrición Clínica'}
-                      value={registerData.especializacion}
-                      onChange={(e) => setRegisterData({ ...registerData, especializacion: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
+                    <div className="form-group">
+                      <label htmlFor="especializacion">Especialización *</label>
+                      <div className="input-icon">
+                        <BookOpen size={18} />
+                        <input
+                          id="especializacion"
+                          type="text"
+                          placeholder="Nutrición Deportiva"
+                          value={registerData.especializacion}
+                          onChange={(e) => setRegisterData({ ...registerData, especializacion: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="form-group">
                   <label htmlFor="email-register">Email</label>

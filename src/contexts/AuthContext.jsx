@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('nutri_users', JSON.stringify(users));
   }, [users]);
 
-  const register = (email, password, fullName, role, matricula, especializacion) => {
+  const register = (email, password, fullName, role, matricula = '', especializacion = '') => {
     const existingUser = users.find(u => u.email === email);
     if (existingUser) {
       return { success: false, error: 'El email ya está registrado' };
@@ -34,9 +34,9 @@ export function AuthProvider({ children }) {
       password,
       fullName,
       role,
-      matricula,
-      especializacion,
-      isAdmin: role === 'Nutricionista' && matricula.startsWith('NUT'), // Admin si es nutricionista con MN que comience con NUT
+      matricula: matricula || '',
+      especializacion: especializacion || '',
+      isAdmin: role === 'Nutricionista' && matricula.startsWith('NUT'),
       avatar: fullName.split(' ').map(n => n[0]).join(''),
       createdAt: new Date().toISOString()
     };

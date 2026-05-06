@@ -5,7 +5,12 @@
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(curl -s http://localhost:5174/)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git merge *)",
+      "Bash(git commit -m 'Agregar documentación completa del sistema de autenticación *)"
     ]
   }
 }
