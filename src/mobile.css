@@ -1,0 +1,202 @@
+/* NutriAppGO - Core Mobile Overrides */
+@media (max-width: 768px) {
+
+  /* Layout Structure */
+  .sidebar {
+    position: fixed !important;
+    left: -100% !important;
+    width: 280px !important;
+    height: 100vh !important;
+    transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    z-index: 3000 !important;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .sidebar.open {
+    left: 0 !important;
+  }
+
+  .sidebar-logo {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .mobile-close-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .sidebar-toggle-btn {
+    display: none !important;
+  }
+
+  .main {
+    width: 100% !important;
+    margin-left: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .topbar {
+    padding: 0 12px !important;
+    height: 64px !important;
+  }
+
+  .topbar-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+  }
+
+  /* Global Grid & spacing */
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .page {
+    padding: 16px 12px !important;
+  }
+
+  .card {
+    padding: 16px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Components */
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .section-header button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Library & Tabs */
+  .library-header {
+    margin-bottom: 24px !important;
+  }
+
+  .library-tabs,
+  .day-selector,
+  .filter-bar {
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 12px !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .library-tabs::-webkit-scrollbar,
+  .day-selector::-webkit-scrollbar,
+  .filter-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .library-tabs button,
+  .day-btn,
+  .filter-bar button {
+    white-space: nowrap !important;
+    padding: 8px 16px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Tables */
+  .table-overflow {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin-bottom: 20px !important;
+    border-radius: 12px !important;
+    background: var(--bg-card);
+  }
+
+  table {
+    min-width: 600px !important;
+    /* Ensure table remains legible with scroll */
+  }
+
+  /* Profile Button */
+  .btn-profile-topbar {
+    padding: 4px 8px !important;
+  }
+
+  .btn-profile-topbar span {
+    display: none !important;
+    /* Force hide text on mobile */
+  }
+
+  .topbar-actions {
+    gap: 8px !important;
+  }
+
+  .topbar-actions .input-icon {
+    display: none !important;
+  }
+
+  /* Modals */
+  .modal {
+    width: 95% !important;
+    margin: 10px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-body {
+    padding: 16px !important;
+  }
+
+  .sidebar-overlay.active {
+    display: block !important;
+  }
+
+  /* Hamburger Icon */
+  .hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 20px;
+    padding: 4px 0;
+  }
+
+  .hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-main);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* General spacing fixes */
+  .page {
+    padding: 20px 16px !important;
+  }
+
+  .main {
+    background: var(--bg-app);
+  }
+
+  /* Improved Topbar for mobile */
+  .topbar {
+    border-bottom: 1px solid var(--border-light) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  }
+
+  .topbar-title {
+    font-size: 16px !important;
+  }
+}

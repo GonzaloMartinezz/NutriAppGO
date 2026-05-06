@@ -1,18 +1,32 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ACTIVITY_LABELS } from '../utils/math';
+import { 
+  Users, 
+  ClipboardList, 
+  ChefHat, 
+  GraduationCap, 
+  Zap, 
+  ArrowRight,
+  TrendingUp,
+  Plus
+} from 'lucide-react';
 
-export function Dashboard({ patients, setPage, userProfile }) {
+export function Dashboard({ patients, userProfile }) {
+  const navigate = useNavigate();
   const active = patients.filter((p) => p.status === 'ACTIVE').length;
+  
   const recentPlan = [
     { name: 'Plan Julio — María G.', date: '01/05', kcal: 1820 },
     { name: 'Plan Junio — Carlos P.', date: '28/04', kcal: 2850 },
     { name: 'Plan Mayo — Roberto S.', date: '15/04', kcal: 1650 },
   ];
+
   return (
     <div>
-      <div className="section-header mb-6">
+      <div className="section-header mb-6" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div className="section-title" style={{ color: 'var(--text-main)' }}>¡Hola, {userProfile.name.split(' ')[0]}! 👋</div>
+          <div className="section-title" style={{ color: 'var(--text-main)', fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-display)' }}>¡Hola, {userProfile.name.split(' ')[0]}! 👋</div>
           <div className="text-muted text-sm" style={{ marginTop: 3 }}>
             {userProfile.role} {userProfile.name} · MN {userProfile.mn} ·{' '}
             {new Date().toLocaleDateString('es-AR', {
@@ -22,15 +36,16 @@ export function Dashboard({ patients, setPage, userProfile }) {
             })}
           </div>
         </div>
-        <button className="btn btn-primary" onClick={() => setPage('calculator')}>
-          ⚡ Calculadora SARA 2
+        <button className="btn btn-primary" onClick={() => navigate('/calculator')} style={{ height: 'fit-content' }}>
+          <Zap size={18} fill="currentColor" />
+          <span>Calculadora SARA 2</span>
         </button>
       </div>
 
       <div className="hero-card mb-6">
         <img src="/hero-bg.png" className="hero-img" alt="Nutrition" />
         <div className="hero-content">
-          <div className="hero-title">
+          <div className="hero-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 800 }}>
             Impulsando la Salud con Datos
           </div>
           <div className="hero-text">
@@ -38,41 +53,47 @@ export function Dashboard({ patients, setPage, userProfile }) {
           </div>
         </div>
       </div>
+
       <div className="stat-grid">
         <div className="stat-card">
-          <div className="stat-icon">👥</div>
+          <div className="stat-icon" style={{ color: 'var(--green-600)', marginBottom: '12px' }}><Users size={24} /></div>
           <div className="stat-label">Pacientes activos</div>
           <div className="stat-value">{active}</div>
-          <div className="stat-sub">+1 este mes</div>
+          <div className="stat-sub" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <TrendingUp size={12} color="var(--green-600)" />
+            <span>+1 este mes</span>
+          </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon">📋</div>
+          <div className="stat-icon" style={{ color: 'var(--blue-600)', marginBottom: '12px' }}><ClipboardList size={24} /></div>
           <div className="stat-label">Planes activos</div>
           <div className="stat-value">6</div>
           <div className="stat-sub">2 por vencer</div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon">🍽️</div>
+          <div className="stat-icon" style={{ color: 'var(--amber-600)', marginBottom: '12px' }}><ChefHat size={24} /></div>
           <div className="stat-label">Recetas guardadas</div>
           <div className="stat-value">4</div>
           <div className="stat-sub">todas activas</div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon">🎓</div>
+          <div className="stat-icon" style={{ color: 'var(--slate-600)', marginBottom: '12px' }}><GraduationCap size={24} /></div>
           <div className="stat-label">Certificaciones</div>
           <div className="stat-value">8</div>
           <div className="stat-sub">1 por vencer</div>
         </div>
       </div>
+
       <div className="grid-2 gap-4">
         <div className="card">
           <div className="card-title">
-            <span className="icon">👥</span>Pacientes recientes
+            <Users size={16} />
+            <span>Pacientes recientes</span>
           </div>
           {patients.slice(0, 4).map((p) => {
             const last = p.anthropometry[p.anthropometry.length - 1];
             return (
-              <div key={p.id} className="patient-row" onClick={() => setPage('patients')}>
+              <div key={p.id} className="patient-row" onClick={() => navigate('/patients')}>
                 <div className="patient-avatar">
                   {p.firstName[0]}
                   {p.lastName[0]}
@@ -92,17 +113,19 @@ export function Dashboard({ patients, setPage, userProfile }) {
               </div>
             );
           })}
-          <button
+          <Link
+            to="/patients"
             className="btn btn-outline"
-            style={{ width: '100%', marginTop: 10 }}
-            onClick={() => setPage('patients')}
+            style={{ width: '100%', marginTop: 16, textDecoration: 'none' }}
           >
-            Ver todos los pacientes →
-          </button>
+            <span>Ver todos los pacientes</span>
+            <ArrowRight size={16} />
+          </Link>
         </div>
         <div className="card">
           <div className="card-title">
-            <span className="icon">📋</span>Planes recientes
+            <ClipboardList size={16} />
+            <span>Planes recientes</span>
           </div>
           {recentPlan.map((pl, i) => (
             <div
@@ -111,13 +134,13 @@ export function Dashboard({ patients, setPage, userProfile }) {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '10px 0',
+                padding: '12px 0',
                 borderBottom:
                   (i < recentPlan.length - 1) ? '1px solid var(--border-light)' : 'none',
               }}
             >
               <div>
-                <div style={{ fontWeight: 500, fontSize: 13, color: 'var(--text-main)' }}>{pl.name}</div>
+                <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-main)' }}>{pl.name}</div>
                 <div className="text-sm text-muted">
                   {pl.date} · {pl.kcal} kcal objetivo
                 </div>
@@ -128,29 +151,35 @@ export function Dashboard({ patients, setPage, userProfile }) {
           <div className="divider" />
           <div className="quick-access-card"
             style={{
-              background: 'var(--border-light)',
-              borderRadius: 10,
+              background: 'var(--slate-50)',
+              borderRadius: 12,
               padding: 16,
               marginTop: 4,
-              border: '1px solid var(--border)'
+              border: '1px solid var(--border)',
+              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.02)'
             }}
           >
             <div
               style={{
-                fontWeight: 600,
+                fontWeight: 700,
                 fontSize: 13,
                 color: 'var(--accent)',
                 marginBottom: 4,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
             >
-              ⚡ Acceso rápido
+              <Zap size={14} fill="currentColor" />
+              <span>Acceso rápido</span>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
               Analizar alimentos con la tabla SARA 2
             </div>
             <button
               className="btn btn-primary btn-sm"
-              onClick={() => setPage('calculator')}
+              onClick={() => navigate('/calculator')}
+              style={{ width: '100%', justifyContent: 'center' }}
             >
               Abrir calculadora
             </button>

@@ -1,4 +1,22 @@
 import React, { useState } from 'react';
+import { 
+  UserPlus, 
+  Search, 
+  ArrowLeft, 
+  Ruler, 
+  TrendingUp, 
+  Zap, 
+  Pill, 
+  Phone, 
+  Mail, 
+  Plus, 
+  X, 
+  ChevronLeft,
+  Calendar,
+  Activity,
+  HeartPulse,
+  Target
+} from 'lucide-react';
 import { Toast } from './Toast';
 import { WeightChart } from './WeightChart';
 import { MacroBar } from './MacroBar';
@@ -115,20 +133,21 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
         >
           <div
             className="section-header"
-            style={{ padding: '0 4px', marginBottom: 4 }}
+            style={{ padding: '0 4px', marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
           >
-            <span style={{ fontWeight: 700, fontSize: 14 }}>
+            <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-main)' }}>
               Pacientes ({filtered.length})
             </span>
-            <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
-              + Nuevo
+            <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)} style={{ padding: '6px 12px' }}>
+              <Plus size={16} />
+              <span>Nuevo</span>
             </button>
           </div>
           <div className="input-icon" style={{ marginBottom: 4 }}>
-            <span className="icon">🔍</span>
+            <span className="icon"><Search size={16} /></span>
             <input
               className="input"
-              placeholder="Buscar..."
+              placeholder="Buscar por nombre..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -179,7 +198,8 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
               style={{ marginBottom: 8, width: 'fit-content' }}
               onClick={() => setSelected(null)}
             >
-              ← Volver a la lista
+              <ArrowLeft size={16} />
+              <span>Volver a la lista</span>
             </button>
             {/* Header */}
             <div
@@ -268,7 +288,8 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
               <div className="card">
                 <div className="section-header" style={{ marginBottom: 12 }}>
                   <div className="card-title" style={{ marginBottom: 0 }}>
-                    <span className="icon">📏</span>Antropometría
+                    <Ruler size={16} />
+                    <span>Antropometría</span>
                   </div>
                   <button
                     className="btn btn-outline btn-sm"
@@ -390,9 +411,10 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
                         </div>
                         <div
                           className="card-title"
-                          style={{ marginBottom: 8, marginTop: 4 }}
+                          style={{ marginBottom: 12, marginTop: 4 }}
                         >
-                          <span className="icon">📈</span>Evolución de peso
+                          <TrendingUp size={16} />
+                          <span>Evolución de peso</span>
                         </div>
                         <WeightChart data={pat.anthropometry} />
                         <div style={{ marginTop: 12 }}>
@@ -446,7 +468,7 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
                   })()
                 ) : (
                   <div className="empty-state">
-                    <div className="empty-icon">📏</div>
+                    <Ruler size={48} style={{ opacity: 0.1, marginBottom: '16px' }} />
                     <div className="empty-text">Sin mediciones</div>
                     <button
                       className="btn btn-primary btn-sm"
@@ -463,7 +485,8 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div className="card">
                   <div className="card-title">
-                    <span className="icon">⚡</span>Requerimientos nutricionales
+                    <Zap size={16} />
+                    <span>Requerimientos nutricionales</span>
                   </div>
                   {pat.requirements ? (
                     <>
@@ -617,7 +640,8 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
                 </div>
                 <div className="card">
                   <div className="card-title">
-                    <span className="icon">💊</span>Medicación / Alergias
+                    <Pill size={16} />
+                    <span>Medicación / Alergias</span>
                   </div>
                   {pat.medications.length > 0 ? (
                     <div style={{ marginBottom: 8 }}>
@@ -644,8 +668,9 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
                     </div>
                   )}
                   <div className="divider" />
-                  <div className="card-title" style={{ marginBottom: 4 }}>
-                    <span className="icon">📞</span>Contacto
+                  <div className="card-title" style={{ marginBottom: 12 }}>
+                    <Phone size={16} />
+                    <span>Contacto</span>
                   </div>
                   <div className="text-sm" style={{ color: 'var(--slate-600)' }}>
                     {pat.contact.email}
@@ -668,7 +693,7 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
             }}
           >
             <div className="empty-state">
-              <div className="empty-icon">👈</div>
+              <ChevronLeft size={48} style={{ opacity: 0.1, marginBottom: '16px' }} />
               <div className="empty-text">Seleccioná un paciente</div>
               <div className="empty-sub">
                 Hacé clic en un paciente de la lista para ver su ficha completa
@@ -691,7 +716,7 @@ export function Patients({ patients, setPatients, triggerConfirm }) {
                 className="btn btn-ghost btn-icon"
                 onClick={() => setShowAnthro(false)}
               >
-                ✕
+                <X size={20} />
               </button>
             </div>
             <div className="modal-body">

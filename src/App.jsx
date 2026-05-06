@@ -1,4 +1,33 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Routes, 
+  Route, 
+  Link, 
+  useLocation, 
+  useNavigate,
+  Navigate
+} from 'react-router-dom';
+import { 
+  Home, 
+  Calculator as CalcIcon, 
+  Users, 
+  Utensils, 
+  BookOpen, 
+  Settings as SettingsIcon, 
+  Bell, 
+  Search, 
+  Moon, 
+  Sun, 
+  ChevronLeft, 
+  ChevronRight,
+  Menu,
+  User,
+  X,
+  Library as LibraryIcon,
+  ChefHat,
+  FolderOpen
+} from 'lucide-react';
+
 import { Dashboard } from './components/Dashboard';
 import { Calculator } from './components/Calculator';
 import { Patients } from './components/Patients';
@@ -6,33 +35,39 @@ import { Plans } from './components/Plans';
 import { Recipes } from './components/Recipes';
 import { Library } from './components/Library';
 import { Settings } from './components/Settings';
+import { Desarrollos } from './components/Desarrollos';
 import { ConfirmModal } from './components/ConfirmModal';
 
 // Initial Data Imports
 import { SAMPLE_PATIENTS } from './data/patients';
 import { SAMPLE_RECIPES } from './data/recipes';
 
-const NavItem = ({ icon, label, active, onClick, collapsed }) => (
-  <div 
+const NavItem = ({ icon: Icon, label, path, active, onClick, collapsed }) => (
+  <Link 
+    to={path}
     className={`nav-item ${active ? 'active' : ''}`} 
     onClick={onClick} 
     title={collapsed ? label : ''}
   >
-    <span className="nav-icon">{icon}</span>
+    <span className="nav-icon"><Icon size={20} strokeWidth={active ? 2.5 : 2} /></span>
     {!collapsed && <span>{label}</span>}
-  </div>
+  </Link>
 );
 
 export default function App() {
-  // --- PERSISTENT STATE ---
-  const [page, setPage] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('nutri_theme');
     return saved === 'dark';
   });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '' });
   
+  // Data state
   const [patients, setPatients] = useState(() => {
     const saved = localStorage.getItem('nutri_patients');
     return saved ? JSON.parse(saved) : SAMPLE_PATIENTS;
@@ -41,6 +76,11 @@ export default function App() {
   const [recipes, setRecipes] = useState(() => {
     const saved = localStorage.getItem('nutri_recipes');
     return saved ? JSON.parse(saved) : SAMPLE_RECIPES;
+  });
+
+  const [developments, setDevelopments] = useState(() => {
+    const saved = localStorage.getItem('nutri_developments');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [userProfile, setUserProfile] = useState(() => {
@@ -56,29 +96,19 @@ export default function App() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // --- SYNC TO LOCAL STORAGE ---
-  useEffect(() => {
-    localStorage.setItem('nutri_patients', JSON.stringify(patients));
-  }, [patients]);
-
-  useEffect(() => {
-    localStorage.setItem('nutri_recipes', JSON.stringify(recipes));
-  }, [recipes]);
-
-  useEffect(() => {
-    localStorage.setItem('nutri_profile', JSON.stringify(userProfile));
-  }, [userProfile]);
+  // Sync state to local storage
+  useEffect(() => { localStorage.setItem('nutri_patients', JSON.stringify(patients)); }, [patients]);
+  useEffect(() => { localStorage.setItem('nutri_recipes', JSON.stringify(recipes)); }, [recipes]);
+  useEffect(() => { localStorage.setItem('nutri_profile', JSON.stringify(userProfile)); }, [userProfile]);
+  useEffect(() => { localStorage.setItem('nutri_developments', JSON.stringify(developments)); }, [developments]);
 
   useEffect(() => {
     localStorage.setItem('nutri_theme', isDarkMode ? 'dark' : 'light');
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
+    if (isDarkMode) document.body.classList.add('dark-theme');
+    else document.body.classList.remove('dark-theme');
   }, [isDarkMode]);
 
-  // --- GLOBAL SEARCH LOGIC ---
+  // Global search
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return null;
     const q = searchQuery.toLowerCase();
@@ -88,57 +118,45 @@ export default function App() {
     };
   }, [searchQuery, patients, recipes]);
 
-  const titles = {
-    dashboard: 'Inicio',
-    calculator: 'Calculadora SARA 2',
-    patients: 'Gestión de Pacientes',
-    plans: 'Planes Nutricionales',
-    recipes: 'Recetario Profesional',
-    library: 'Biblioteca Personal',
-    settings: 'Configuración'
-  };
-
   const triggerConfirm = (title, message) => {
     setConfirmModal({ isOpen: true, title, message });
   };
 
-  const renderPage = () => {
-    switch (page) {
-      case 'dashboard': 
-        return <Dashboard patients={patients} setPage={setPage} userProfile={userProfile} />;
-      case 'calculator': 
-        return <Calculator />;
-      case 'patients': 
-        return <Patients patients={patients} setPatients={setPatients} triggerConfirm={triggerConfirm} />;
-      case 'plans': 
-        return <Plans patients={patients} />;
-      case 'recipes': 
-        return <Recipes recipes={recipes} setRecipes={setRecipes} triggerConfirm={triggerConfirm} />;
-      case 'library': 
-        return <Library />;
-      case 'settings': 
-        return <Settings userProfile={userProfile} setUserProfile={setUserProfile} triggerConfirm={triggerConfirm} />;
-      default: 
-        return <Dashboard patients={patients} setPage={setPage} userProfile={userProfile} />;
+  const currentPath = location.pathname;
+
+  const titles = {
+    '/': 'Inicio',
+    '/calculator': 'Calculadora SARA 2',
+    '/patients': 'Gestión de Pacientes',
+    '/plans': 'Planes Nutricionales',
+    '/recipes': 'Recetario Profesional',
+    '/library': 'Biblioteca Personal',
+    '/settings': 'Configuración',
+    '/developments': 'Mis Desarrollos'
+  };
+
+  const handleNavClick = () => {
+    if (window.innerWidth <= 768) {
+      setIsSidebarOpen(false);
     }
   };
 
   return (
-    <div id="root">
+    <div className="app-layout">
       {/* GLOBAL SEARCH OVERLAY */}
       {searchQuery && (
         <div className="modal-overlay" style={{ zIndex: 2000, alignItems: 'flex-start', paddingTop: '80px' }} onClick={() => setSearchQuery('')}>
           <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Resultados de búsqueda: "{searchQuery}"</div>
-              <button className="btn btn-ghost btn-icon" onClick={() => setSearchQuery('')}>✕</button>
+              <button className="btn btn-ghost btn-icon" onClick={() => setSearchQuery('')}><X size={20} /></button>
             </div>
             <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
               <div className="grid-2 gap-4">
                 <div>
                   <div className="card-title">Pacientes ({searchResults.patients.length})</div>
                   {searchResults.patients.map(p => (
-                    <div key={p.id} className="patient-row" onClick={() => { setPage('patients'); setSearchQuery(''); }}>
+                    <div key={p.id} className="patient-row" onClick={() => { navigate('/patients'); setSearchQuery(''); handleNavClick(); }}>
                       <div className="patient-avatar">{p.firstName[0]}{p.lastName[0]}</div>
                       <div>
                         <div className="patient-name">{p.firstName} {p.lastName}</div>
@@ -146,20 +164,18 @@ export default function App() {
                       </div>
                     </div>
                   ))}
-                  {searchResults.patients.length === 0 && <div className="empty-state">No se encontraron pacientes</div>}
                 </div>
                 <div>
                   <div className="card-title">Recetas ({searchResults.recipes.length})</div>
                   {searchResults.recipes.map(r => (
-                    <div key={r.id} className="patient-row" onClick={() => { setPage('recipes'); setSearchQuery(''); }}>
-                      <div className="patient-avatar" style={{ background: 'var(--green-100)', color: 'var(--green-700)' }}>🍳</div>
+                    <div key={r.id} className="patient-row" onClick={() => { navigate('/recipes'); setSearchQuery(''); handleNavClick(); }}>
+                      <div className="patient-avatar" style={{ background: 'var(--green-100)', color: 'var(--green-700)' }}><ChefHat size={18} /></div>
                       <div>
                         <div className="patient-name">{r.name}</div>
                         <div className="text-sm text-muted">{r.category}</div>
                       </div>
                     </div>
                   ))}
-                  {searchResults.recipes.length === 0 && <div className="empty-state">No se encontraron recetas</div>}
                 </div>
               </div>
             </div>
@@ -168,44 +184,42 @@ export default function App() {
       )}
 
       {/* SIDEBAR OVERLAY FOR MOBILE */}
-      <div 
-        className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} 
-        onClick={() => setIsSidebarOpen(false)}
-      />
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} onClick={() => setIsSidebarOpen(false)} />
 
       <nav className={`sidebar ${!isSidebarOpen ? 'collapsed' : ''} ${isSidebarOpen ? 'open' : ''}`}>
-        <button className="sidebar-toggle-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-          <span style={{ transform: isSidebarOpen ? 'rotate(180deg)' : 'rotate(0deg)', display: 'block' }}>➔</span>
-        </button>
-
         <div className="sidebar-logo">
           <div className="logo-mark">
-            <div className="logo-icon">🥗</div>
+            <div className="logo-icon"><Utensils size={24} /></div>
             <div>
               <div className="logo-text">NutriApp</div>
               <div className="logo-sub">Plataforma Profesional</div>
             </div>
           </div>
+          <button className="sidebar-toggle-btn hide-mobile" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+          </button>
         </div>
 
         <div className="sidebar-nav">
           <div className="nav-section">
             <div className="nav-label">Principal</div>
-            <NavItem icon="🏠" label="Inicio" active={page === 'dashboard'} onClick={() => { setPage('dashboard'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
-            <NavItem icon="📊" label="Calculadora SARA" active={page === 'calculator'} onClick={() => { setPage('calculator'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
-            <NavItem icon="🍴" label="Planes Nutricionales" active={page === 'plans'} onClick={() => { setPage('plans'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
-            <NavItem icon="📖" label="Recetario" active={page === 'recipes'} onClick={() => { setPage('recipes'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon={Home} label="Inicio" path="/" active={currentPath === '/'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={CalcIcon} label="Calculadora SARA" path="/calculator" active={currentPath === '/calculator'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={FolderOpen} label="Mis Desarrollos" path="/developments" active={currentPath === '/developments'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={Utensils} label="Planes Nutricionales" path="/plans" active={currentPath === '/plans'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={Users} label="Pacientes" path="/patients" active={currentPath === '/patients'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={BookOpen} label="Recetario" path="/recipes" active={currentPath === '/recipes'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
           </div>
 
           <div className="nav-section">
             <div className="nav-label">Estudio & Carrera</div>
-            <NavItem icon="📚" label="Biblioteca" active={page === 'library'} onClick={() => { setPage('library'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
-            <NavItem icon="⚙️" label="Configuración" active={page === 'settings'} onClick={() => { setPage('settings'); setIsSidebarOpen(false); }} collapsed={!isSidebarOpen} />
+            <NavItem icon={LibraryIcon} label="Biblioteca" path="/library" active={currentPath === '/library'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
+            <NavItem icon={SettingsIcon} label="Configuración" path="/settings" active={currentPath === '/settings'} onClick={handleNavClick} collapsed={!isSidebarOpen} />
           </div>
         </div>
 
         <div className="sidebar-user">
-          <div className="user-card">
+          <div className="user-card" onClick={() => { navigate('/settings'); handleNavClick(); }} style={{ cursor: 'pointer' }}>
             <div className="user-avatar">{userProfile.avatar}</div>
             <div>
               <div className="user-name">Lic. {userProfile.name}</div>
@@ -217,13 +231,17 @@ export default function App() {
 
       <main className="main">
         <header className="topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>☰</button>
-            <div className="topbar-title">{titles[page] || 'NutriApp'}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button className="menu-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <div className="hamburger-icon">
+                <span /> <span /> <span />
+              </div>
+            </button>
+            <div className="topbar-title">{titles[currentPath] || 'NutriApp'}</div>
           </div>
           <div className="topbar-actions">
-            <div className="input-icon" style={{ width: '280px' }}>
-              <span className="icon">🔍</span>
+            <div className="input-icon hide-mobile" style={{ width: '280px' }}>
+              <span className="icon"><Search size={18} /></span>
               <input 
                 type="text" 
                 className="input" 
@@ -232,21 +250,48 @@ export default function App() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <button 
-              className="btn btn-ghost btn-sm" 
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              title={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-              style={{ fontSize: '18px' }}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => alert('Próximamente: Notificaciones')}>🔔</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => setPage('settings')}>⚙️ Perfil</button>
+            
+            <div className="user-menu-container">
+              <button 
+                className="user-avatar-btn" 
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                style={{ 
+                  background: 'var(--green-600)', color: '#fff', width: '36px', height: '36px', 
+                  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: '13px', border: '2px solid var(--green-100)', cursor: 'pointer'
+                }}
+              >
+                {userProfile.avatar}
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="user-dropdown-premium">
+                  <button className="dropdown-item" onClick={() => { setIsDarkMode(!isDarkMode); setIsUserMenuOpen(false); }}>
+                    {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                    <span>{isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
+                  </button>
+                  <button className="dropdown-item" onClick={() => { navigate('/settings'); setIsUserMenuOpen(false); handleNavClick(); }}>
+                    <SettingsIcon size={18} />
+                    <span>Configuración</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
         <div className="page">
-          {renderPage()}
+          <Routes>
+            <Route path="/" element={<Dashboard patients={patients} userProfile={userProfile} />} />
+            <Route path="/calculator" element={<Calculator onSave={(dev) => setDevelopments(prev => [dev, ...prev])} triggerConfirm={triggerConfirm} />} />
+            <Route path="/patients" element={<Patients patients={patients} setPatients={setPatients} triggerConfirm={triggerConfirm} />} />
+            <Route path="/plans" element={<Plans patients={patients} />} />
+            <Route path="/recipes" element={<Recipes recipes={recipes} setRecipes={setRecipes} triggerConfirm={triggerConfirm} />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/developments" element={<Desarrollos developments={developments} setDevelopments={setDevelopments} triggerConfirm={triggerConfirm} />} />
+            <Route path="/settings" element={<Settings userProfile={userProfile} setUserProfile={setUserProfile} triggerConfirm={triggerConfirm} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </div>
 
         <ConfirmModal 

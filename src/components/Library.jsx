@@ -25,82 +25,66 @@ export function Library() {
   return (
     <div className="library-container">
       {/* Header & Local Search */}
-      <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div>
-          <h1 style={{ fontSize: '36px', fontFamily: 'var(--font-display)', color: '#064e3b', marginBottom: '8px' }}>Biblioteca de Activos</h1>
-          <p className="text-muted" style={{ fontSize: '16px' }}>Tu repositorio central de conocimiento clínico y certificaciones profesionales.</p>
+      <div className="library-header section-header">
+        <div className="header-text">
+          <h1 className="hero-title-clinical">Biblioteca de Activos</h1>
+          <p className="text-muted">Tu repositorio central de conocimiento clínico y certificaciones.</p>
         </div>
-        <div className="input-icon" style={{ width: '300px' }}>
+        <div className="input-icon search-wrapper-library">
           <span className="icon">🔍</span>
           <input 
             type="text" 
             className="input" 
-            placeholder="Buscar en biblioteca..." 
+            placeholder="Buscar..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ borderRadius: '12px', border: '1px solid #e2e8f0', background: '#fff' }}
           />
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div style={{ display: 'flex', gap: '32px', borderBottom: '1px solid #e2e8f0', marginBottom: '32px' }}>
-        {['all', 'certs', 'resources', 'favorites'].map(tab => (
-          <button 
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{ 
-              padding: '12px 4px', 
-              background: 'none', 
-              border: 'none', 
-              borderBottom: activeTab === tab ? '2px solid #064e3b' : '2px solid transparent',
-              color: activeTab === tab ? '#064e3b' : '#94a3b8',
-              fontWeight: 700,
-              fontSize: '14px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            {tab === 'all' ? 'Todo' : tab === 'certs' ? 'Certificaciones' : tab === 'resources' ? 'Recursos' : 'Favoritos'}
-          </button>
-        ))}
+      <div className="library-tabs-container">
+        <div className="library-tabs">
+          {['all', 'certs', 'resources', 'favorites'].map(tab => (
+            <button 
+              key={tab}
+              className={activeTab === tab ? 'active' : ''}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'all' ? 'Todo' : tab === 'certs' ? 'Certs' : tab === 'resources' ? 'Recursos' : 'Favs'}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gap: '48px' }}>
+      <div className="library-sections">
         {/* Certifications Section */}
         {(activeTab === 'all' || activeTab === 'certs') && (
-          <section>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b' }}>Carrera & Certificaciones</h3>
-              <button className="btn btn-ghost btn-sm" style={{ fontWeight: 700, color: '#064e3b' }}>Ver Historial →</button>
+          <section className="library-section">
+            <div className="section-header">
+              <h3 className="section-subtitle">Carrera & Títulos</h3>
+              <button className="btn btn-ghost btn-sm hide-mobile">Ver Historial →</button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            <div className="cert-grid">
               {filteredCerts.map(cert => (
-                <div key={cert.id} className="card cert-card-modern" style={{ position: 'relative', overflow: 'hidden', transition: 'transform 0.2s' }}>
-                  <div style={{ 
-                    position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: cert.color 
-                  }}></div>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <div style={{ 
-                      width: '48px', height: '48px', borderRadius: '12px', background: `${cert.color}15`, 
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' 
-                    }}>
+                <div key={cert.id} className="card cert-card-modern">
+                  <div className="cert-accent" style={{ background: cert.color }}></div>
+                  <div className="cert-content">
+                    <div className="cert-icon-wrapper" style={{ background: `${cert.color}15` }}>
                       {cert.icon}
                     </div>
-                    <div>
-                      <div style={{ fontSize: '11px', fontWeight: 800, color: cert.color, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>{cert.type}</div>
-                      <h4 style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b', lineHeight: 1.3, marginBottom: '4px' }}>{cert.title}</h4>
-                      <p style={{ fontSize: '13px', color: '#64748b' }}>{cert.institution} · {cert.year}</p>
+                    <div className="cert-info">
+                      <div className="cert-type" style={{ color: cert.color }}>{cert.type}</div>
+                      <h4 className="cert-title">{cert.title}</h4>
+                      <p className="cert-meta">{cert.institution} · {cert.year}</p>
                     </div>
                   </div>
                 </div>
               ))}
-              <div className="card" style={{ border: '2px dashed #e2e8f0', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <div style={{ textAlign: 'center', color: '#94a3b8' }}>
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>⊕</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700 }}>Añadir Certificado</div>
+              <div className="card add-cert-card">
+                <div className="add-cert-content">
+                  <div className="add-icon">⊕</div>
+                  <div className="add-text">Añadir</div>
                 </div>
               </div>
             </div>
@@ -109,53 +93,65 @@ export function Library() {
 
         {/* Resources Section */}
         {(activeTab === 'all' || activeTab === 'resources') && (
-          <section>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b' }}>Recursos & Herramientas</h3>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                 <button className="btn btn-outline btn-sm">📁 Carpetas</button>
-                 <button className="btn btn-primary btn-sm">⊕ Subir</button>
+          <section className="library-section">
+            <div className="section-header">
+              <h3 className="section-subtitle">Recursos & Herramientas</h3>
+              <div className="section-actions">
+                 <button className="btn btn-outline btn-sm">⊕ Subir</button>
               </div>
             </div>
-            <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '16px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            
+            {/* Desktop Table View */}
+            <div className="card library-table-wrapper hide-mobile">
+              <table className="clinical-table">
                 <thead>
-                  <tr style={{ background: '#f8fafc', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>
-                    <th style={{ padding: '16px 24px', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Nombre del Recurso</th>
-                    <th style={{ padding: '16px 24px', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Categoría</th>
-                    <th style={{ padding: '16px 24px', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Formato</th>
-                    <th style={{ padding: '16px 24px', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Tamaño</th>
-                    <th style={{ padding: '16px 24px' }}></th>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Formato</th>
+                    <th>Tamaño</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredResources.map(res => (
-                    <tr key={res.id} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer' }} className="table-row-hover">
-                      <td style={{ padding: '16px 24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontSize: '20px' }}>{res.icon}</span>
-                          <span style={{ fontWeight: 600, color: '#1e293b' }}>{res.title}</span>
+                    <tr key={res.id} className="table-row-hover">
+                      <td>
+                        <div className="resource-name">
+                          <span className="resource-icon">{res.icon}</span>
+                          <span className="resource-title">{res.title}</span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 24px' }}><span className="badge badge-gray">{res.category}</span></td>
-                      <td style={{ padding: '16px 24px' }}><span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>{res.format}</span></td>
-                      <td style={{ padding: '16px 24px', fontSize: '13px', color: '#94a3b8' }}>{res.size}</td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                        <button className="btn btn-ghost btn-sm" style={{ fontSize: '18px' }}>📥</button>
+                      <td><span className="badge badge-gray">{res.category}</span></td>
+                      <td><span className="format-tag">{res.format}</span></td>
+                      <td>{res.size}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button className="btn btn-ghost btn-sm">📥</button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="resource-grid-mobile show-mobile">
+              {filteredResources.map(res => (
+                <div key={res.id} className="card resource-mobile-card">
+                  <div className="resource-mobile-header">
+                    <span className="resource-icon">{res.icon}</span>
+                    <div className="resource-mobile-info">
+                      <div className="resource-title">{res.title}</div>
+                      <div className="resource-meta">{res.category} · {res.size}</div>
+                    </div>
+                    <button className="btn btn-ghost btn-icon">📥</button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .cert-card-modern:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
-        .table-row-hover:hover { background: #f8fafc; }
-      `}} />
     </div>
   );
 }
