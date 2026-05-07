@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { RoleSelector } from '../components/RoleSelector';
-import { Utensils, Mail, Lock, User, FileText, BookOpen, AlertCircle, Eye, EyeOff, Chrome, Apple } from 'lucide-react';
+import { Utensils, Mail, Lock, User, FileText, BookOpen, AlertCircle, Eye, EyeOff, Globe, Apple } from 'lucide-react';
 import '../styles/auth.css';
 
 export function Auth() {
@@ -133,7 +133,7 @@ export function Auth() {
                       placeholder="tu@email.com"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      autocomplete="email"
+                      autoComplete="email"
                       required
                     />
                   </div>
@@ -149,7 +149,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      autocomplete="current-password"
+                      autoComplete="current-password"
                       required
                     />
                     <button
@@ -173,7 +173,7 @@ export function Auth() {
 
               <div className="oauth-buttons">
                 <button type="button" className="oauth-button" title="Continuar con Google">
-                  <Chrome size={18} />
+                  <Globe size={18} />
                   <span>Google</span>
                 </button>
                 <button type="button" className="oauth-button" title="Continuar con Apple">
@@ -241,7 +241,7 @@ export function Auth() {
                       placeholder="Tu nombre completo"
                       value={registerData.fullName}
                       onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
-                      autocomplete="name"
+                      autoComplete="name"
                       required
                     />
                   </div>
@@ -314,7 +314,7 @@ export function Auth() {
                       placeholder="tu@email.com"
                       value={registerData.email}
                       onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                      autocomplete="email"
+                      autoComplete="email"
                       required
                     />
                   </div>
@@ -330,7 +330,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={registerData.password}
                       onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                      autocomplete="new-password"
+                      autoComplete="new-password"
                       required
                     />
                     <button
@@ -353,7 +353,7 @@ export function Auth() {
                       placeholder="••••••••"
                       value={registerData.confirmPassword}
                       onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                      autocomplete="new-password"
+                      autoComplete="new-password"
                       required
                     />
                   </div>
