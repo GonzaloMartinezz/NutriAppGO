@@ -55,32 +55,32 @@ export function Dashboard({ patients, userProfile }) {
       </div>
 
       <div className="stat-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ color: 'var(--green-600)', marginBottom: '12px' }}><Users size={24} /></div>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--green-600)' }}>
+          <div className="stat-icon" style={{ fontSize: '32px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>🏥</div>
           <div className="stat-label">Pacientes activos</div>
           <div className="stat-value">{active}</div>
-          <div className="stat-sub" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div className="stat-sub" style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
             <TrendingUp size={12} color="var(--green-600)" />
             <span>+1 este mes</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ color: 'var(--blue-600)', marginBottom: '12px' }}><ClipboardList size={24} /></div>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)', borderLeft: '4px solid var(--blue-600)' }}>
+          <div className="stat-icon" style={{ fontSize: '32px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>📋</div>
           <div className="stat-label">Planes activos</div>
           <div className="stat-value">6</div>
-          <div className="stat-sub">2 por vencer</div>
+          <div className="stat-sub" style={{ textAlign: 'center' }}>2 por vencer</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ color: 'var(--amber-600)', marginBottom: '12px' }}><ChefHat size={24} /></div>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%)', borderLeft: '4px solid var(--amber-600)' }}>
+          <div className="stat-icon" style={{ fontSize: '32px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>🍳</div>
           <div className="stat-label">Recetas guardadas</div>
           <div className="stat-value">4</div>
-          <div className="stat-sub">todas activas</div>
+          <div className="stat-sub" style={{ textAlign: 'center' }}>todas activas</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ color: 'var(--slate-600)', marginBottom: '12px' }}><GraduationCap size={24} /></div>
+        <div className="stat-card" style={{ background: 'linear-gradient(135deg, rgba(205, 220, 57, 0.1) 0%, rgba(205, 220, 57, 0.05) 100%)', borderLeft: '4px solid #cddc39' }}>
+          <div className="stat-icon" style={{ fontSize: '32px', marginBottom: '12px', display: 'flex', justifyContent: 'center' }}>🎓</div>
           <div className="stat-label">Certificaciones</div>
           <div className="stat-value">8</div>
-          <div className="stat-sub">1 por vencer</div>
+          <div className="stat-sub" style={{ textAlign: 'center' }}>1 por vencer</div>
         </div>
       </div>
 

@@ -118,36 +118,36 @@ export function Settings() {
                 <div className="grid-2 gap-4" style={{ marginBottom: '24px' }}>
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Nombre Profesional</label>
-                    <input className="input" name="fullName" value={formData.fullName} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} />
+                    <input className="input" name="fullName" value={formData.fullName} onChange={handleChange} style={{ borderRadius: '10px', height: '38px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }} />
                   </div>
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Tipo de Cuenta</label>
-                    <input className="input" name="role" value={formData.role} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} disabled />
+                    <input className="input" name="role" value={formData.role} onChange={handleChange} style={{ borderRadius: '10px', height: '38px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }} disabled />
                   </div>
                   {formData.role === 'Nutricionista' && (
                     <>
                       <div className="form-group">
                         <label className="label" style={{ fontSize: '12px' }}>Matrícula Profesional</label>
-                        <input className="input" name="matricula" value={formData.matricula} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} placeholder="NUT-12345" />
+                        <input className="input" name="matricula" value={formData.matricula} onChange={handleChange} style={{ borderRadius: '10px', height: '38px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }} placeholder="NUT-12345" />
                       </div>
                       <div className="form-group">
                         <label className="label" style={{ fontSize: '12px' }}>Especialización</label>
-                        <input className="input" name="especializacion" value={formData.especializacion} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} placeholder="Nutrición Deportiva" />
+                        <input className="input" name="especializacion" value={formData.especializacion} onChange={handleChange} style={{ borderRadius: '10px', height: '38px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }} placeholder="Nutrición Deportiva" />
                       </div>
                     </>
                   )}
                   <div className="form-group">
                     <label className="label" style={{ fontSize: '12px' }}>Email de Trabajo</label>
-                    <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} style={{ borderRadius: '10px', height: '38px' }} disabled />
+                    <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} style={{ borderRadius: '10px', height: '38px', background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }} disabled />
                   </div>
                 </div>
 
-                <div style={{ background: 'var(--slate-50)', padding: '20px', borderRadius: '14px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
+                <div style={{ background: 'rgba(205, 220, 57, 0.08)', padding: '20px', borderRadius: '14px', marginBottom: '24px', border: '1px solid rgba(205, 220, 57, 0.2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <Globe size={16} color="var(--green-600)" />
+                    <Globe size={16} color="#cddc39" />
                     <h4 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-main)' }}>Preferencias Regionales</h4>
                   </div>
-                  <select className="input" style={{ background: '#fff', borderRadius: '10px', height: '38px' }}>
+                  <select className="input" style={{ background: 'rgba(30, 41, 59, 0.5)', borderRadius: '10px', height: '38px', border: '1px solid rgba(205, 220, 57, 0.3)', color: 'var(--text-main)' }}>
                     <option>Español (Latinoamérica)</option>
                     <option>English</option>
                     <option>Português</option>
